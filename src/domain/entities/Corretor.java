@@ -8,8 +8,9 @@ public class Corretor extends Usuario {
     private String creci;
     private Double percentualComissao;
 
-    public Corretor(String nome, String email, String cpf, String telefone, TipoNotificacao notificacao, String creci, Double comissao) {
-        super(nome, email, cpf, telefone, RoleUsuario.ANUNCIANTE, notificacao);
+    public Corretor(String nome, String email, String senha, String telefone, TipoNotificacao notificacao, String creci, Double comissao, String documento) {
+        super(nome, email, senha, telefone, documento, RoleUsuario.ANUNCIANTE, notificacao);
+
         this.creci = creci;
         this.percentualComissao = comissao;
     }

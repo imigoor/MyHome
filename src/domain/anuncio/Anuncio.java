@@ -2,7 +2,7 @@ package domain.anuncio;
 
 import domain.entities.Usuario;
 import domain.enums.StatusAnuncio;
-import domain.enums.TipoTransacao;
+import domain.enums.TipoAnuncio;
 import domain.imovel.Imovel;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,13 +13,25 @@ public class Anuncio {
     private BigDecimal valor;
     private LocalDateTime dataCriacao;
 
-    private TipoTransacao tipoTransacao;
+    private TipoAnuncio tipoAnuncio;
     private StatusAnuncio status;
 
     private Imovel imovel;
     private Usuario anunciante;
 
     public Anuncio() {
+
+    }
+
+    public Anuncio(String titulo, BigDecimal valor, TipoAnuncio tipoAnuncio,
+                   StatusAnuncio statusAnuncio, Imovel imovel, Usuario usuario){
+        this.titulo = titulo;
+        this.valor = valor;
+        this.tipoAnuncio = tipoAnuncio;
+        this.status = statusAnuncio;
+        this.imovel = imovel;
+        this.anunciante = usuario;
+
         this.status = StatusAnuncio.RASCUNHO;
         this.dataCriacao = LocalDateTime.now();
     }
@@ -33,8 +45,8 @@ public class Anuncio {
     public BigDecimal getValor() { return valor; }
     public void setValor(BigDecimal valor) { this.valor = valor; }
 
-    public TipoTransacao getTipoTransacao() { return tipoTransacao; }
-    public void setTipoTransacao(TipoTransacao tipoTransacao) { this.tipoTransacao = tipoTransacao; }
+    public TipoAnuncio getTipoAnuncio() { return tipoAnuncio; }
+    public void setTipoAnuncio(TipoAnuncio tipoAnuncio) { this.tipoAnuncio = tipoAnuncio; }
 
     public StatusAnuncio getStatus() { return status; }
     public void setStatus(StatusAnuncio status) { this.status = status; }

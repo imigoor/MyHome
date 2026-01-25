@@ -1,5 +1,7 @@
 package domain.imovel;
 
+import domain.enums.TipoImovel;
+
 public class Terreno extends Imovel {
     private boolean ehMurado;
     private String topografia;
@@ -18,4 +20,9 @@ public class Terreno extends Imovel {
 
     public String getTopografia() { return topografia; }
     public void setTopografia(String topografia) { this.topografia = topografia; }
+
+    @Override
+    public String getTipoImovel() {
+        return "TERRENO";
+    }
 }

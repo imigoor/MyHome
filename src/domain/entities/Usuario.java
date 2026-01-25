@@ -8,17 +8,18 @@ public abstract class Usuario {
     private String nome;
     private String email;
     private String senha;
-    private String cpf;
     private String telefone;
+    private String documento; // CPF ou CNPJ
 
     private RoleUsuario role;
     private TipoNotificacao preferenciaNotificacao;
 
-    public Usuario(String nome, String email, String cpf, String telefone, RoleUsuario role, TipoNotificacao preferenciaNotificacao) {
+    public Usuario(String nome, String email, String senha, String telefone, String documento, RoleUsuario role, TipoNotificacao preferenciaNotificacao) {
         this.nome = nome;
         this.email = email;
-        this.cpf = cpf;
+        this.senha = senha;
         this.telefone = telefone;
+        this.documento = documento;
         this.role = role;
         this.preferenciaNotificacao = preferenciaNotificacao;
     }

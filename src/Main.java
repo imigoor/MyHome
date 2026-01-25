@@ -1,15 +1,45 @@
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import controller.MenuController;
+import domain.entities.Usuario;
+import repository.anuncio.AnuncioRepository;
+import repository.usuario.UsuarioRepository;
+import service.anuncio.criar.CriarAnuncioUseCase;
+import service.login.IRealizarLoginUseCase;
+import service.login.RealizarLoginUseCase;
+import view.ConsoleUI;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        // 1. Instanciação das Peças (Camada de Infra/View)
+        ConsoleUI ui = new ConsoleUI();
+        UsuarioRepository userRepo = new UsuarioRepository();
+        IRealizarLoginUseCase loginUC = new RealizarLoginUseCase(userRepo);
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+        Usuario usuarioLogado = null;
+
+        // --- FLUXO DE LOGIN ---
+        while (usuarioLogado == null) {
+            ui.mostrarMensagem("=== BEM-VINDO AO MYHOME ===");
+            String email = ui.lerTextoObrigatorio("Login (Email)");
+            String senha = ui.lerTextoObrigatorio("Senha");
+
+            try {
+                usuarioLogado = loginUC.execute(email, senha);
+                ui.mostrarMensagem("Olá, " + usuarioLogado.getNome() + "! Login realizado.");
+            } catch (Exception e) {
+                ui.mostrarErro(e.getMessage());
+            }
         }
+
+        // --- MONTAGEM DA APLICAÇÃO ---
+        AnuncioRepository anuncioRepo = new AnuncioRepository();
+
+        // UseCases de Anúncio
+        CriarAnuncioUseCase criarManualUC = new CriarAnuncioUseCase(anuncioRepo);
+        //CriarAnuncioPadraoUseCase criarPadraoUC = new CriarAnuncioPadraoUseCase(anuncioRepo);
+
+        // Passa o usuário logado pro Controller
+        MenuController menu = new MenuController(ui, usuarioLogado, criarManualUC);//, criarPadraoUC);
+
+        menu.iniciar();
     }
 }

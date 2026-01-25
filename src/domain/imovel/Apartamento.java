@@ -1,5 +1,7 @@
 package domain.imovel;
 
+import domain.enums.TipoImovel;
+
 public class Apartamento extends Imovel {
     private int andar;
     private boolean possuiElevador;
@@ -29,4 +31,9 @@ public class Apartamento extends Imovel {
 
     public Double getValorCondominio() { return this.valorCondominio; }
     public void setValorCondominio(Double valorCondominio) { this.valorCondominio = valorCondominio; }
+
+    @Override
+    public String getTipoImovel() {
+        return "APARTAMENTO";
+    }
 }

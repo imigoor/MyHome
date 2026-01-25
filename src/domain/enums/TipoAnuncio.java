@@ -1,6 +1,6 @@
 package domain.enums;
 
-public enum TipoTransacao {
+public enum TipoAnuncio {
     VENDA,
     ALUGUEL,
     TEMPORADA

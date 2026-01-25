@@ -1,5 +1,7 @@
 package domain.imovel;
 
+import domain.enums.TipoImovel;
+
 public class Casa extends Imovel {
     private boolean possuiQuintal;
     private boolean possuiPiscina;
@@ -23,4 +25,9 @@ public class Casa extends Imovel {
 
     public int getVagasGaragem() { return vagasGaragem; }
     public void setVagasGaragem(int vagasGaragem) { this.vagasGaragem = vagasGaragem; }
+
+    @Override
+    public String getTipoImovel() {
+        return "CASA";
+    }
 }
