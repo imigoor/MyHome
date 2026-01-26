@@ -7,6 +7,8 @@ public class Casa extends Imovel {
     private boolean possuiPiscina;
     private int vagasGaragem;
 
+    public Casa(){}
+
     public Casa(Long id, Endereco endereco, Double areaMetrosQuadrados,
                 Integer numeroQuartos, Integer numeroBanheiros, String descricao,
                 boolean possuiQuintal, boolean possuiPiscina, int vagasGaragem) {
@@ -15,6 +17,20 @@ public class Casa extends Imovel {
         this.possuiQuintal = possuiQuintal;
         this.possuiPiscina = possuiPiscina;
         this.vagasGaragem = vagasGaragem;
+    }
+
+    public Casa(Casa target) {
+        super(target); // Pai copia quartos, area, etc.
+        if (target != null) {
+            this.possuiQuintal = target.possuiQuintal;
+            this.possuiPiscina = target.possuiPiscina;
+            this.vagasGaragem = target.vagasGaragem;
+        }
+    }
+
+    @Override
+    public Imovel clone() {
+        return new Casa(this); // A mágica acontece aqui!
     }
 
     public boolean isPossuiQuintal() { return possuiQuintal; }

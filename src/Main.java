@@ -2,7 +2,10 @@ import controller.MenuController;
 import domain.entities.Usuario;
 import repository.anuncio.AnuncioRepository;
 import repository.usuario.UsuarioRepository;
+import service.anuncio.criar.CriarAnuncioPadraoUseCase;
 import service.anuncio.criar.CriarAnuncioUseCase;
+import service.anuncio.criar.ICriarAnuncioPadraoUseCase;
+import service.anuncio.criar.ICriarAnuncioUseCase;
 import service.login.IRealizarLoginUseCase;
 import service.login.RealizarLoginUseCase;
 import view.ConsoleUI;
@@ -34,11 +37,11 @@ public class Main {
         AnuncioRepository anuncioRepo = new AnuncioRepository();
 
         // UseCases de Anúncio
-        CriarAnuncioUseCase criarManualUC = new CriarAnuncioUseCase(anuncioRepo);
-        //CriarAnuncioPadraoUseCase criarPadraoUC = new CriarAnuncioPadraoUseCase(anuncioRepo);
+        ICriarAnuncioUseCase criarManualUseCase = new CriarAnuncioUseCase(anuncioRepo);
+        ICriarAnuncioPadraoUseCase criarPadraoUseCase = new CriarAnuncioPadraoUseCase(anuncioRepo);
 
         // Passa o usuário logado pro Controller
-        MenuController menu = new MenuController(ui, usuarioLogado, criarManualUC);//, criarPadraoUC);
+        MenuController menu = new MenuController(ui, usuarioLogado, criarManualUseCase, criarPadraoUseCase);
 
         menu.iniciar();
     }

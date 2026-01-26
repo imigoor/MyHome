@@ -15,6 +15,19 @@ public class Terreno extends Imovel {
         this.topografia = topografia;
     }
 
+    public Terreno(Terreno terrenoTarget) {
+        super(terrenoTarget);
+        if (terrenoTarget != null) {
+            this.ehMurado = terrenoTarget.ehMurado;
+            this.topografia = terrenoTarget.topografia;
+        }
+    }
+
+    @Override
+    public Imovel clone() {
+        return new Terreno(this); // A mágica acontece aqui!
+    }
+
     public boolean isEhMurado() { return ehMurado; }
     public void setEhMurado(boolean ehMurado) { this.ehMurado = ehMurado; }
 

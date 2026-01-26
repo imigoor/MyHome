@@ -8,6 +8,8 @@ public class Apartamento extends Imovel {
     private boolean portaria24h;
     private Double valorCondominio;
 
+    public Apartamento(){}
+
     public Apartamento(Long id, Endereco endereco, Double areaMetrosQuadrados,
                        Integer numeroQuartos, Integer numeroBanheiros,
                        String descricao, int andar, boolean possuiElevador,
@@ -18,6 +20,21 @@ public class Apartamento extends Imovel {
         this. possuiElevador = possuiElevador;
         this.portaria24h = portaria24h;
         this.valorCondominio = valorCondominio;
+    }
+
+    public Apartamento(Apartamento apartamentoTarget) {
+        super(apartamentoTarget); // Pai copia quartos, area, etc.
+        if (apartamentoTarget != null) {
+            this.andar = apartamentoTarget.andar;
+            this.possuiElevador = apartamentoTarget.possuiElevador;
+            this.portaria24h = apartamentoTarget.portaria24h;
+            this.valorCondominio = apartamentoTarget.valorCondominio;
+        }
+    }
+
+    @Override
+    public Imovel clone() {
+        return new Apartamento(this); // A mágica acontece aqui!
     }
 
     public int getAndar(){ return this.andar; }

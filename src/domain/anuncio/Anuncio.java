@@ -6,9 +6,10 @@ import domain.enums.TipoAnuncio;
 import domain.imovel.Imovel;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class Anuncio {
-    private Long id;
+    private UUID id;
     private String titulo;
     private BigDecimal valor;
     private LocalDateTime dataCriacao;
@@ -36,8 +37,8 @@ public class Anuncio {
         this.dataCriacao = LocalDateTime.now();
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
     public String getTitulo() { return titulo; }
     public void setTitulo(String titulo) { this.titulo = titulo; }

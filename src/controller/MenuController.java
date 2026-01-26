@@ -2,7 +2,9 @@ package controller;
 
 import domain.enums.StatusAnuncio;
 import domain.enums.TipoAnuncio;
+import domain.imovel.Endereco;
 import domain.imovel.Imovel;
+import service.anuncio.criar.ICriarAnuncioPadraoUseCase;
 import service.anuncio.criar.ICriarAnuncioUseCase;
 import domain.anuncio.Anuncio;
 import domain.entities.Usuario;
@@ -16,12 +18,14 @@ public class MenuController {
     private Usuario usuarioLogado; // Sessão atual
 
     // Dependências (Os UseCases que esse controller usa)
-    private ICriarAnuncioUseCase criarAnuncioUC;
+    private ICriarAnuncioUseCase criarAnuncioUseCase;
+    private ICriarAnuncioPadraoUseCase criarAnuncioPadraoUseCase;
 
-    public MenuController(ConsoleUI ui, Usuario usuarioLogado, ICriarAnuncioUseCase criarAnuncioUC) {
+    public MenuController(ConsoleUI ui, Usuario usuarioLogado, ICriarAnuncioUseCase criarAnuncioUseCase, ICriarAnuncioPadraoUseCase criarAnuncioPadraoUseCase) {
         this.ui = ui;
         this.usuarioLogado = usuarioLogado;
-        this.criarAnuncioUC = criarAnuncioUC;
+        this.criarAnuncioUseCase = criarAnuncioUseCase;
+        this.criarAnuncioPadraoUseCase = criarAnuncioPadraoUseCase;
     }
 
     // loop principal (estava no Main, agora está aqui, organizado)
@@ -97,7 +101,7 @@ public class MenuController {
                     break;
 
                 case "2":
-                    //fluxoCriarPadrao(); // Chama o código do RF02
+                    fluxoCriarPadrao();
                     noSubMenu = false;
                     break;
 
@@ -126,7 +130,7 @@ public class MenuController {
         // 2. UseCase executa a lógica
 
         // VERIFICAR SE FAz MAIS SENTIDO PASSAR UM DTO algo assim
-        Anuncio anuncio = criarAnuncioUC.execute(
+        Anuncio anuncio = criarAnuncioUseCase.execute(
                 usuarioLogado,
                 titulo,
                 BigDecimal.valueOf(valorD),
@@ -137,5 +141,58 @@ public class MenuController {
 
         // 3. View mostra sucesso
         ui.mostrarMensagem("Anúncio criado com sucesso. ID: " + anuncio.getId());
+    }
+
+    private void fluxoCriarPadrao() {
+        ui.mostrarMensagem("\n=== ANÚNCIO RÁPIDO (RF02 - Prototype) ===");
+
+        String titulo = ui.lerTextoObrigatorio("Título do Anúncio");
+        Double valorD = ui.lerDecimal("Valor (R$)");
+        String tipoStr = ui.lerTextoObrigatorio("Tipo (VENDA/ALUGUEL)").toUpperCase();
+
+        BigDecimal valor = BigDecimal.valueOf(valorD);
+        TipoAnuncio tipoAnuncio;
+        try {
+            tipoAnuncio = TipoAnuncio.valueOf(tipoStr);
+        } catch (IllegalArgumentException e) {
+            ui.mostrarErro("Tipo inválido. Use VENDA ou ALUGUEL.");
+            return;
+        }
+
+        ui.mostrarMensagem("--- Localização ---");
+        Endereco endereco = ui.lerEndereco();
+
+        ui.mostrarMensagem("\n--- Escolha o Padrão do Imóvel ---");
+        ui.mostrarMensagem("1 - Casa Padrão (3 Quartos, Quintal, 90m²)");
+        ui.mostrarMensagem("2 - Apartamento Padrão (2 Quartos, 60m²)");
+
+        String op = ui.lerTexto("Opção");
+        String chaveTemplate = "";
+
+        if (op.equals("1")) chaveTemplate = "CASA_PADRAO";
+        else if (op.equals("2")) chaveTemplate = "APTO_PADRAO";
+        else {
+            ui.mostrarErro("Opção inválida!");
+            return;
+        }
+
+        try {
+            // CHAMA O USECASE
+            Anuncio anuncio = criarAnuncioPadraoUseCase.execute(
+                    usuarioLogado,
+                    titulo,
+                    valor,
+                    tipoAnuncio,
+                    endereco,
+                    chaveTemplate
+            );
+
+            ui.mostrarMensagem("Anúncio Criado com Sucesso!!");
+            ui.mostrarMensagem("ID: " + anuncio.getId());
+            ui.mostrarMensagem("Imóvel: " + anuncio.getImovel().getDescricao());
+
+        } catch (Exception e) {
+            ui.mostrarErro("Erro ao criar: " + e.getMessage());
+        }
     }
 }
