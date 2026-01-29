@@ -9,10 +9,10 @@ public class Casa extends Imovel {
 
     public Casa(){}
 
-    public Casa(Long id, Endereco endereco, Double areaMetrosQuadrados,
+    public Casa(Endereco endereco, Double areaMetrosQuadrados,
                 Integer numeroQuartos, Integer numeroBanheiros, String descricao,
                 boolean possuiQuintal, boolean possuiPiscina, int vagasGaragem) {
-        super(id, endereco, areaMetrosQuadrados, numeroQuartos, numeroBanheiros, descricao);
+        super(endereco, areaMetrosQuadrados, numeroQuartos, numeroBanheiros, descricao);
 
         this.possuiQuintal = possuiQuintal;
         this.possuiPiscina = possuiPiscina;

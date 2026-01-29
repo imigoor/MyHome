@@ -10,11 +10,11 @@ public class Apartamento extends Imovel {
 
     public Apartamento(){}
 
-    public Apartamento(Long id, Endereco endereco, Double areaMetrosQuadrados,
+    public Apartamento(Endereco endereco, Double areaMetrosQuadrados,
                        Integer numeroQuartos, Integer numeroBanheiros,
                        String descricao, int andar, boolean possuiElevador,
                        boolean portaria24h, Double valorCondominio) {
-        super(id, endereco, areaMetrosQuadrados, numeroQuartos, numeroBanheiros, descricao);
+        super(endereco, areaMetrosQuadrados, numeroQuartos, numeroBanheiros, descricao);
 
         this.andar = andar;
         this. possuiElevador = possuiElevador;

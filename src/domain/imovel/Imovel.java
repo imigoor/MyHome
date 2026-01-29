@@ -3,8 +3,10 @@ package domain.imovel;
 import domain.enums.TipoImovel;
 import domain.interfaces.patterns.prototype.Prototype;
 
+import java.util.UUID;
+
 public abstract class Imovel implements Prototype<Imovel> {
-    private Long id;
+    private UUID id;
     private Endereco endereco;
     private Double areaMetrosQuadrados;
     private Integer numeroQuartos;
@@ -13,8 +15,8 @@ public abstract class Imovel implements Prototype<Imovel> {
 
     public Imovel() {}
 
-    public Imovel(Long id, Endereco endereco, Double areaMetrosQuadrados, Integer numeroQuartos, Integer numeroBanheiros, String descricao) {
-        this.id = id; // criei esse atributo pensando que seria gerado via banco, mas como iremos simular banco verificar se fazz sentido esse atributo
+    public Imovel(Endereco endereco, Double areaMetrosQuadrados, Integer numeroQuartos, Integer numeroBanheiros, String descricao) {
+        this.id = UUID.randomUUID();
         this.endereco = endereco;
         this.areaMetrosQuadrados = areaMetrosQuadrados;
         this.numeroQuartos = numeroQuartos;
@@ -26,9 +28,7 @@ public abstract class Imovel implements Prototype<Imovel> {
 
     public Imovel(Imovel imovelTarget) {
         if (imovelTarget != null) {
-            // regra: clone nasce sem ID (será gerado ao salvar)
-            this.id = null;
-
+            this.id = UUID.randomUUID();
             this.areaMetrosQuadrados = imovelTarget.areaMetrosQuadrados;
             this.numeroQuartos = imovelTarget.numeroQuartos;
             this.numeroBanheiros = imovelTarget.numeroBanheiros;
@@ -45,8 +45,8 @@ public abstract class Imovel implements Prototype<Imovel> {
 
     public abstract String getTipoImovel();
 
-    public Long getId() { return id; }
-    public void setId(Long id) {this.id = id;}
+    public UUID getId() { return id; }
+    public void setId(UUID id) {this.id = id;}
 
     public Endereco getEndereco() { return endereco; }
     public void setEndereco(Endereco endereco) { this.endereco = endereco; }

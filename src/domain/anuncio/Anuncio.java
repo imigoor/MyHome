@@ -20,16 +20,11 @@ public class Anuncio {
     private Imovel imovel;
     private Usuario anunciante;
 
-    public Anuncio() {
-
-    }
-
-    public Anuncio(String titulo, BigDecimal valor, TipoAnuncio tipoAnuncio,
-                   StatusAnuncio statusAnuncio, Imovel imovel, Usuario usuario){
+    public Anuncio(String titulo, BigDecimal valor, TipoAnuncio tipoAnuncio, Imovel imovel, Usuario usuario){
+        this.id = UUID.randomUUID();
         this.titulo = titulo;
         this.valor = valor;
         this.tipoAnuncio = tipoAnuncio;
-        this.status = statusAnuncio;
         this.imovel = imovel;
         this.anunciante = usuario;
 

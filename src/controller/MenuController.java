@@ -1,9 +1,7 @@
 package controller;
 
-import domain.enums.StatusAnuncio;
 import domain.enums.TipoAnuncio;
 import domain.imovel.Endereco;
-import domain.imovel.Imovel;
 import service.anuncio.criar.ICriarAnuncioPadraoUseCase;
 import service.anuncio.criar.ICriarAnuncioUseCase;
 import domain.anuncio.Anuncio;
@@ -15,7 +13,7 @@ import java.util.Map;
 
 public class MenuController {
     private ConsoleUI ui;
-    private Usuario usuarioLogado; // Sessão atual
+    private Usuario usuarioLogado;
 
     // Dependências (Os UseCases que esse controller usa)
     private ICriarAnuncioUseCase criarAnuncioUseCase;
@@ -37,12 +35,12 @@ public class MenuController {
             ui.mostrarMensagem("============================");
 
             // opccoes disponiveis pra todos os perfies
-            ui.mostrarMensagem("1. Buscar Imóveis (RF06)");
+            ui.mostrarMensagem("1 - Buscar Imóveis (RF06)");
 
             // esse aqui so mostra pra perfil de anunciante
             if (usuarioLogado.podeAnunciar()) {
-                ui.mostrarMensagem("2. Criar Anúncio (RF01/RF02)");
-                ui.mostrarMensagem("3. Meus Anúncios");
+                ui.mostrarMensagem("2 - Criar Anúncio (RF01/RF02)");
+                ui.mostrarMensagem("3 - Meus Anúncios");
             }
 
             ui.mostrarMensagem("0. Sair");
@@ -88,9 +86,9 @@ public class MenuController {
 
         while (noSubMenu) {
             ui.mostrarMensagem("\n=== MODO DE CRIAÇÃO ===");
-            ui.mostrarMensagem("1. Criar Personalizado (Do Zero - RF01)");
-            ui.mostrarMensagem("2. Usar Modelo Padrão (Rápido - RF02)");
-            ui.mostrarMensagem("0. Voltar ao Menu Principal");
+            ui.mostrarMensagem("1 - Criar Personalizado (Do Zero - RF01)");
+            ui.mostrarMensagem("2 - Usar Modelo Padrão (Rápido - RF02)");
+            ui.mostrarMensagem("0 - Voltar ao Menu Principal");
 
             String opcao = ui.lerTexto("Escolha");
 
@@ -115,34 +113,44 @@ public class MenuController {
         }
     }
 
-    // Fluxo específico do RF01
+    // Fluxo do RF01
     private void fluxoCriarAnuncioManual() {
         ui.mostrarMensagem("\n=== NOVO ANÚNCIO (RF01) ===");
 
-        // 1. View coleta dados
         String titulo = ui.lerTextoObrigatorio("Título");
         Double valorD = ui.lerDecimal("Valor (R$)");
-        String tipoAnuncio = ui.lerTextoObrigatorio("Tipo (VENDA/ALUGUEL)").toUpperCase();
+
+        TipoAnuncio tipoAnuncio;
+        try {
+            String tipoStr = ui.lerTextoObrigatorio("Tipo (VENDA/ALUGUEL)").toUpperCase();
+            tipoAnuncio = TipoAnuncio.valueOf(tipoStr);
+        } catch (IllegalArgumentException e) {
+            ui.mostrarErro("Tipo inválido! Digite VENDA ou ALUGUEL.");
+            return;
+        }
+
         String tipoImovel = ui.lerTexto("Tipo Imóvel (CASA/APARTAMENTO/TERRENO)").toUpperCase();
 
-        Map<String, Object> dadosImovel = ui.coletarDadosImovel(tipoImovel);
+        try {
+            Map<String, Object> dadosImovel = ui.coletarDadosImovel(tipoImovel);
 
-        // 2. UseCase executa a lógica
+            Anuncio anuncio = criarAnuncioUseCase.execute(
+                    usuarioLogado,
+                    titulo,
+                    BigDecimal.valueOf(valorD),
+                    tipoAnuncio,
+                    tipoImovel,
+                    dadosImovel
+            );
 
-        // VERIFICAR SE FAz MAIS SENTIDO PASSAR UM DTO algo assim
-        Anuncio anuncio = criarAnuncioUseCase.execute(
-                usuarioLogado,
-                titulo,
-                BigDecimal.valueOf(valorD),
-                tipoAnuncio,
-                tipoImovel,
-                dadosImovel
-        );
-
-        // 3. View mostra sucesso
-        ui.mostrarMensagem("Anúncio criado com sucesso. ID: " + anuncio.getId());
+            ui.mostrarMensagem("Anúncio criado com sucesso. ID: " + anuncio.getId());
+            ui.mostrarMensagem("Imóvel: " + anuncio.getImovel().getDescricao());
+        } catch (Exception e) {
+            ui.mostrarErro("Erro ao criar anúncio: " + e.getMessage());
+        }
     }
 
+    // Fluxo do RF02
     private void fluxoCriarPadrao() {
         ui.mostrarMensagem("\n=== ANÚNCIO RÁPIDO (RF02 - Prototype) ===");
 
@@ -155,7 +163,7 @@ public class MenuController {
         try {
             tipoAnuncio = TipoAnuncio.valueOf(tipoStr);
         } catch (IllegalArgumentException e) {
-            ui.mostrarErro("Tipo inválido. Use VENDA ou ALUGUEL.");
+            ui.mostrarErro("Tipo inválido. Use 'VENDA' ou 'ALUGUEL'.");
             return;
         }
 
@@ -177,7 +185,6 @@ public class MenuController {
         }
 
         try {
-            // CHAMA O USECASE
             Anuncio anuncio = criarAnuncioPadraoUseCase.execute(
                     usuarioLogado,
                     titulo,

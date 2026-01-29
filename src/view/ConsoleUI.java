@@ -105,7 +105,7 @@ public class ConsoleUI {
 //    }
 
     public Endereco lerEndereco() {
-        System.out.println("--- Endereço do Imóvel ---");
+        mostrarMensagem("--- Endereço do Imóvel ---");
         String rua = lerTextoObrigatorio("Rua");
         String bairro = lerTextoObrigatorio("Bairro");
         String cidade = lerTextoObrigatorio("Cidade");
@@ -118,14 +118,7 @@ public class ConsoleUI {
     public Map<String, Object> coletarDadosImovel(String tipoImovel) {
         Map<String, Object> dados = new HashMap<>();
 
-        System.out.println("--- Dados Gerais do Imóvel ---");
-        dados.put("descricao", lerTexto("Descrição"));
-        dados.put("area", lerDecimal("Área (m²)"));
-
-        dados.put("endereco", lerEndereco());
-
-        System.out.println("--- Dados Específicos para " + tipoImovel + " ---");
-
+        mostrarMensagem("--- Dados Específicos para " + tipoImovel + " ---");
         // pra guiar as perguntas
         switch (tipoImovel.toUpperCase()) {
             case "CASA":
@@ -151,8 +144,15 @@ public class ConsoleUI {
                 break;
 
             default:
-                break;
+                throw new IllegalArgumentException("Tipo de imóvel '" + tipoImovel.toUpperCase() + "' não é suportado pelo sistema.");
         }
+
+        mostrarMensagem("--- Dados Gerais do Imóvel ---");
+        dados.put("descricao", lerTexto("Descrição"));
+        dados.put("area", lerDecimal("Área (m²)"));
+
+        dados.put("endereco", lerEndereco());
+
         return dados;
     }
 }

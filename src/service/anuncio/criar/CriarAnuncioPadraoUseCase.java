@@ -23,16 +23,10 @@ public class CriarAnuncioPadraoUseCase implements ICriarAnuncioPadraoUseCase{
 
     @Override
     public Anuncio execute(Usuario usuario, String titulo, BigDecimal valor, TipoAnuncio tipoAnuncio, Endereco endereco, String chaveTemplateImovel) {
-        Anuncio anuncio = new Anuncio();
-        anuncio.setId(UUID.randomUUID());
-        anuncio.setTitulo(titulo);
-        anuncio.setValor(valor);
-        anuncio.setTipoAnuncio(tipoAnuncio);
-        anuncio.setAnunciante(usuario);
-        anuncio.setStatus(StatusAnuncio.RASCUNHO);
-
         Imovel imovelClonado = registry.obterClone(chaveTemplateImovel);
         imovelClonado.setEndereco(endereco);
+
+        Anuncio anuncio = new Anuncio(titulo, valor, tipoAnuncio, imovelClonado, usuario);
 
         anuncio.setImovel(imovelClonado);
 
