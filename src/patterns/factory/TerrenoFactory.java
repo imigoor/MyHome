@@ -10,7 +10,6 @@ public class TerrenoFactory extends ImovelFactory {
     @Override
     public Imovel criarImovel(Map<String, Object> dados) {
         return new Terreno(
-                null, // ID
                 (Endereco) dados.get("endereco"),
                 (Double) dados.get("area"),
                 0,

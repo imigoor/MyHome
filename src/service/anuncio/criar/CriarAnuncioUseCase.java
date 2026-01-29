@@ -23,7 +23,7 @@ public class CriarAnuncioUseCase implements ICriarAnuncioUseCase{
 
     @Override
     public Anuncio execute(Usuario usuario, String titulo, BigDecimal valor,
-                         String tipoTransacaoStr, String tipoImovel,
+                           TipoAnuncio tipoAnuncio, String tipoImovel,
                          Map<String, Object> dadosImovel) {
         if (!usuario.podeAnunciar()) {
             throw new SecurityException("Usuário não tem permissão para anunciar.");
@@ -32,13 +32,7 @@ public class CriarAnuncioUseCase implements ICriarAnuncioUseCase{
         ImovelFactory imovelFactory = selecionarFabrica(tipoImovel);
         Imovel imovel = imovelFactory.criarImovel(dadosImovel);
 
-        Anuncio anuncio = new Anuncio();
-        anuncio.setTitulo(titulo);
-        anuncio.setValor(valor);
-        anuncio.setTipoAnuncio(TipoAnuncio.valueOf(tipoTransacaoStr));
-        anuncio.setImovel(imovel);
-        anuncio.setAnunciante(usuario);
-        anuncio.setStatus(StatusAnuncio.RASCUNHO);
+        Anuncio anuncio = new Anuncio(titulo, valor, tipoAnuncio, imovel, usuario);
 
         anuncioRepository.salvar(anuncio);
 

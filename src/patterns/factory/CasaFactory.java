@@ -11,7 +11,6 @@ public class CasaFactory extends ImovelFactory {
     @Override
     public Imovel criarImovel(Map<String, Object> dados) {
         return new Casa(
-                null, // ID (decidir por onde iremos gerar)
                 (Endereco) dados.get("endereco"),
                 (Double) dados.get("area"),
                 (Integer) dados.get("quartos"),

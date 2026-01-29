@@ -1,5 +1,6 @@
 package view;
 
+import domain.anuncio.Anuncio;
 import domain.imovel.Endereco;
 
 import java.util.HashMap;
@@ -72,45 +73,52 @@ public class ConsoleUI {
         return entrada.trim().equalsIgnoreCase("S");
     }
 
-    public <T extends Enum<T>> T lerEnum(String mensagem, Class<T> classeDoEnum) {
-        while (true) {
-            System.out.print(mensagem + ": ");
-            String input = scanner.nextLine().toUpperCase().trim();
+//    public <T extends Enum<T>> T lerEnum(String mensagem, Class<T> classeDoEnum) {
+//        while (true) {
+//            System.out.print(mensagem + ": ");
+//            String input = scanner.nextLine().toUpperCase().trim();
+//
+//            if (input.isEmpty()) {
+//                mostrarErro("Campo obrigatório.");
+//                continue;
+//            }
+//
+//            try {
+//                return Enum.valueOf(classeDoEnum, input);
+//            } catch (IllegalArgumentException e) {
+//                System.err.println("Opção inválida! Escolha entre:");
+//                for (T opcao : classeDoEnum.getEnumConstants()) {
+//                    System.err.print("[" + opcao + "] ");
+//                }
+//                System.err.println();
+//            }
+//        }
+//    }
+//
+//    public Anuncio lerAnuncio(){
+//        System.out.println("--- Anuncio do Imóvel ---");
+//        String titulo = lerTextoObrigatorio("Título do Anúncio");
+//        Double valorD = lerDecimal("Valor (R$)");
+//        String tipoStr = lerTextoObrigatorio("Tipo (VENDA/ALUGUEL)").toUpperCase();
+//
+//        return new Anuncio();
+//    }
 
-            if (input.isEmpty()) {
-                mostrarErro("Campo obrigatório.");
-                continue;
-            }
+    public Endereco lerEndereco() {
+        mostrarMensagem("--- Endereço do Imóvel ---");
+        String rua = lerTextoObrigatorio("Rua");
+        String bairro = lerTextoObrigatorio("Bairro");
+        String cidade = lerTextoObrigatorio("Cidade");
+        String estado = lerTextoObrigatorio("Estado");
 
-            try {
-                return Enum.valueOf(classeDoEnum, input);
-            } catch (IllegalArgumentException e) {
-                System.err.println("Opção inválida! Escolha entre:");
-                for (T opcao : classeDoEnum.getEnumConstants()) {
-                    System.err.print("[" + opcao + "] ");
-                }
-                System.err.println();
-            }
-        }
+        return new Endereco(rua, bairro, cidade, estado);
     }
 
     // .............Guias pro RF01.............
     public Map<String, Object> coletarDadosImovel(String tipoImovel) {
         Map<String, Object> dados = new HashMap<>();
 
-        System.out.println("--- Dados Gerais do Imóvel ---");
-        dados.put("descricao", lerTexto("Descrição"));
-        dados.put("area", lerDecimal("Área (m²)"));
-
-        Endereco enderecco = new Endereco();
-        enderecco.setRua(lerTexto("Rua"));
-        enderecco.setBairro(lerTexto("Bairro"));
-        enderecco.setCidade(lerTexto("Cidade"));
-        enderecco.setEstado(lerTexto("Estado"));
-        dados.put("endereco", enderecco);
-
-        System.out.println("--- Dados Específicos para " + tipoImovel + " ---");
-
+        mostrarMensagem("--- Dados Específicos para " + tipoImovel + " ---");
         // pra guiar as perguntas
         switch (tipoImovel.toUpperCase()) {
             case "CASA":
@@ -136,8 +144,15 @@ public class ConsoleUI {
                 break;
 
             default:
-                break;
+                throw new IllegalArgumentException("Tipo de imóvel '" + tipoImovel.toUpperCase() + "' não é suportado pelo sistema.");
         }
+
+        mostrarMensagem("--- Dados Gerais do Imóvel ---");
+        dados.put("descricao", lerTexto("Descrição"));
+        dados.put("area", lerDecimal("Área (m²)"));
+
+        dados.put("endereco", lerEndereco());
+
         return dados;
     }
 }

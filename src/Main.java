@@ -2,21 +2,24 @@ import controller.MenuController;
 import domain.entities.Usuario;
 import repository.anuncio.AnuncioRepository;
 import repository.usuario.UsuarioRepository;
+import service.anuncio.criar.CriarAnuncioPadraoUseCase;
 import service.anuncio.criar.CriarAnuncioUseCase;
+import service.anuncio.criar.ICriarAnuncioPadraoUseCase;
+import service.anuncio.criar.ICriarAnuncioUseCase;
 import service.login.IRealizarLoginUseCase;
 import service.login.RealizarLoginUseCase;
 import view.ConsoleUI;
 
 public class Main {
     public static void main(String[] args) {
-        // 1. Instanciação das Peças (Camada de Infra/View)
+        // instanciação das peças importantes
         ConsoleUI ui = new ConsoleUI();
         UsuarioRepository userRepo = new UsuarioRepository();
         IRealizarLoginUseCase loginUC = new RealizarLoginUseCase(userRepo);
 
         Usuario usuarioLogado = null;
 
-        // --- FLUXO DE LOGIN ---
+        // fluxo de login
         while (usuarioLogado == null) {
             ui.mostrarMensagem("=== BEM-VINDO AO MYHOME ===");
             String email = ui.lerTextoObrigatorio("Login (Email)");
@@ -30,16 +33,13 @@ public class Main {
             }
         }
 
-        // --- MONTAGEM DA APLICAÇÃO ---
         AnuncioRepository anuncioRepo = new AnuncioRepository();
 
-        // UseCases de Anúncio
-        CriarAnuncioUseCase criarManualUC = new CriarAnuncioUseCase(anuncioRepo);
-        //CriarAnuncioPadraoUseCase criarPadraoUC = new CriarAnuncioPadraoUseCase(anuncioRepo);
+        // UseCases
+        ICriarAnuncioUseCase criarManualUseCase = new CriarAnuncioUseCase(anuncioRepo);
+        ICriarAnuncioPadraoUseCase criarPadraoUseCase = new CriarAnuncioPadraoUseCase(anuncioRepo);
 
-        // Passa o usuário logado pro Controller
-        MenuController menu = new MenuController(ui, usuarioLogado, criarManualUC);//, criarPadraoUC);
-
+        MenuController menu = new MenuController(ui, usuarioLogado, criarManualUseCase, criarPadraoUseCase);
         menu.iniciar();
     }
 }

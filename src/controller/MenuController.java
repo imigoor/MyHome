@@ -1,8 +1,8 @@
 package controller;
 
-import domain.enums.StatusAnuncio;
 import domain.enums.TipoAnuncio;
-import domain.imovel.Imovel;
+import domain.imovel.Endereco;
+import service.anuncio.criar.ICriarAnuncioPadraoUseCase;
 import service.anuncio.criar.ICriarAnuncioUseCase;
 import domain.anuncio.Anuncio;
 import domain.entities.Usuario;
@@ -13,15 +13,17 @@ import java.util.Map;
 
 public class MenuController {
     private ConsoleUI ui;
-    private Usuario usuarioLogado; // Sessão atual
+    private Usuario usuarioLogado;
 
     // Dependências (Os UseCases que esse controller usa)
-    private ICriarAnuncioUseCase criarAnuncioUC;
+    private ICriarAnuncioUseCase criarAnuncioUseCase;
+    private ICriarAnuncioPadraoUseCase criarAnuncioPadraoUseCase;
 
-    public MenuController(ConsoleUI ui, Usuario usuarioLogado, ICriarAnuncioUseCase criarAnuncioUC) {
+    public MenuController(ConsoleUI ui, Usuario usuarioLogado, ICriarAnuncioUseCase criarAnuncioUseCase, ICriarAnuncioPadraoUseCase criarAnuncioPadraoUseCase) {
         this.ui = ui;
         this.usuarioLogado = usuarioLogado;
-        this.criarAnuncioUC = criarAnuncioUC;
+        this.criarAnuncioUseCase = criarAnuncioUseCase;
+        this.criarAnuncioPadraoUseCase = criarAnuncioPadraoUseCase;
     }
 
     // loop principal (estava no Main, agora está aqui, organizado)
@@ -33,12 +35,12 @@ public class MenuController {
             ui.mostrarMensagem("============================");
 
             // opccoes disponiveis pra todos os perfies
-            ui.mostrarMensagem("1. Buscar Imóveis (RF06)");
+            ui.mostrarMensagem("1 - Buscar Imóveis (RF06)");
 
             // esse aqui so mostra pra perfil de anunciante
             if (usuarioLogado.podeAnunciar()) {
-                ui.mostrarMensagem("2. Criar Anúncio (RF01/RF02)");
-                ui.mostrarMensagem("3. Meus Anúncios");
+                ui.mostrarMensagem("2 - Criar Anúncio (RF01/RF02)");
+                ui.mostrarMensagem("3 - Meus Anúncios");
             }
 
             ui.mostrarMensagem("0. Sair");
@@ -84,9 +86,9 @@ public class MenuController {
 
         while (noSubMenu) {
             ui.mostrarMensagem("\n=== MODO DE CRIAÇÃO ===");
-            ui.mostrarMensagem("1. Criar Personalizado (Do Zero - RF01)");
-            ui.mostrarMensagem("2. Usar Modelo Padrão (Rápido - RF02)");
-            ui.mostrarMensagem("0. Voltar ao Menu Principal");
+            ui.mostrarMensagem("1 - Criar Personalizado (Do Zero - RF01)");
+            ui.mostrarMensagem("2 - Usar Modelo Padrão (Rápido - RF02)");
+            ui.mostrarMensagem("0 - Voltar ao Menu Principal");
 
             String opcao = ui.lerTexto("Escolha");
 
@@ -97,7 +99,7 @@ public class MenuController {
                     break;
 
                 case "2":
-                    //fluxoCriarPadrao(); // Chama o código do RF02
+                    fluxoCriarPadrao();
                     noSubMenu = false;
                     break;
 
@@ -111,31 +113,93 @@ public class MenuController {
         }
     }
 
-    // Fluxo específico do RF01
+    // Fluxo do RF01
     private void fluxoCriarAnuncioManual() {
         ui.mostrarMensagem("\n=== NOVO ANÚNCIO (RF01) ===");
 
-        // 1. View coleta dados
         String titulo = ui.lerTextoObrigatorio("Título");
         Double valorD = ui.lerDecimal("Valor (R$)");
-        String tipoAnuncio = ui.lerTextoObrigatorio("Tipo (VENDA/ALUGUEL)").toUpperCase();
+
+        TipoAnuncio tipoAnuncio;
+        try {
+            String tipoStr = ui.lerTextoObrigatorio("Tipo (VENDA/ALUGUEL)").toUpperCase();
+            tipoAnuncio = TipoAnuncio.valueOf(tipoStr);
+        } catch (IllegalArgumentException e) {
+            ui.mostrarErro("Tipo inválido! Digite VENDA ou ALUGUEL.");
+            return;
+        }
+
         String tipoImovel = ui.lerTexto("Tipo Imóvel (CASA/APARTAMENTO/TERRENO)").toUpperCase();
 
-        Map<String, Object> dadosImovel = ui.coletarDadosImovel(tipoImovel);
+        try {
+            Map<String, Object> dadosImovel = ui.coletarDadosImovel(tipoImovel);
 
-        // 2. UseCase executa a lógica
+            Anuncio anuncio = criarAnuncioUseCase.execute(
+                    usuarioLogado,
+                    titulo,
+                    BigDecimal.valueOf(valorD),
+                    tipoAnuncio,
+                    tipoImovel,
+                    dadosImovel
+            );
 
-        // VERIFICAR SE FAz MAIS SENTIDO PASSAR UM DTO algo assim
-        Anuncio anuncio = criarAnuncioUC.execute(
-                usuarioLogado,
-                titulo,
-                BigDecimal.valueOf(valorD),
-                tipoAnuncio,
-                tipoImovel,
-                dadosImovel
-        );
+            ui.mostrarMensagem("Anúncio criado com sucesso. ID: " + anuncio.getId());
+            ui.mostrarMensagem("Imóvel: " + anuncio.getImovel().getDescricao());
+        } catch (Exception e) {
+            ui.mostrarErro("Erro ao criar anúncio: " + e.getMessage());
+        }
+    }
 
-        // 3. View mostra sucesso
-        ui.mostrarMensagem("Anúncio criado com sucesso. ID: " + anuncio.getId());
+    // Fluxo do RF02
+    private void fluxoCriarPadrao() {
+        ui.mostrarMensagem("\n=== ANÚNCIO RÁPIDO (RF02 - Prototype) ===");
+
+        String titulo = ui.lerTextoObrigatorio("Título do Anúncio");
+        Double valorD = ui.lerDecimal("Valor (R$)");
+        String tipoStr = ui.lerTextoObrigatorio("Tipo (VENDA/ALUGUEL)").toUpperCase();
+
+        BigDecimal valor = BigDecimal.valueOf(valorD);
+        TipoAnuncio tipoAnuncio;
+        try {
+            tipoAnuncio = TipoAnuncio.valueOf(tipoStr);
+        } catch (IllegalArgumentException e) {
+            ui.mostrarErro("Tipo inválido. Use 'VENDA' ou 'ALUGUEL'.");
+            return;
+        }
+
+        ui.mostrarMensagem("--- Localização ---");
+        Endereco endereco = ui.lerEndereco();
+
+        ui.mostrarMensagem("\n--- Escolha o Padrão do Imóvel ---");
+        ui.mostrarMensagem("1 - Casa Padrão (3 Quartos, Quintal, 90m²)");
+        ui.mostrarMensagem("2 - Apartamento Padrão (2 Quartos, 60m²)");
+
+        String op = ui.lerTexto("Opção");
+        String chaveTemplate = "";
+
+        if (op.equals("1")) chaveTemplate = "CASA_PADRAO";
+        else if (op.equals("2")) chaveTemplate = "APTO_PADRAO";
+        else {
+            ui.mostrarErro("Opção inválida!");
+            return;
+        }
+
+        try {
+            Anuncio anuncio = criarAnuncioPadraoUseCase.execute(
+                    usuarioLogado,
+                    titulo,
+                    valor,
+                    tipoAnuncio,
+                    endereco,
+                    chaveTemplate
+            );
+
+            ui.mostrarMensagem("Anúncio Criado com Sucesso!!");
+            ui.mostrarMensagem("ID: " + anuncio.getId());
+            ui.mostrarMensagem("Imóvel: " + anuncio.getImovel().getDescricao());
+
+        } catch (Exception e) {
+            ui.mostrarErro("Erro ao criar: " + e.getMessage());
+        }
     }
 }
