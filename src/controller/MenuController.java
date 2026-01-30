@@ -6,9 +6,11 @@ import service.anuncio.criar.ICriarAnuncioPadraoUseCase;
 import service.anuncio.criar.ICriarAnuncioUseCase;
 import domain.anuncio.Anuncio;
 import domain.entities.Usuario;
+import service.anuncio.listar.IListarMeusAnunciosUseCase;
 import view.ConsoleUI;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 public class MenuController {
@@ -18,18 +20,22 @@ public class MenuController {
     // Dependências (Os UseCases que esse controller usa)
     private ICriarAnuncioUseCase criarAnuncioUseCase;
     private ICriarAnuncioPadraoUseCase criarAnuncioPadraoUseCase;
+    private IListarMeusAnunciosUseCase listarMeusAnunciosUseCase;
 
-    public MenuController(ConsoleUI ui, Usuario usuarioLogado, ICriarAnuncioUseCase criarAnuncioUseCase, ICriarAnuncioPadraoUseCase criarAnuncioPadraoUseCase) {
+    public MenuController(ConsoleUI ui, Usuario usuarioLogado, ICriarAnuncioUseCase criarAnuncioUseCase,
+                          ICriarAnuncioPadraoUseCase criarAnuncioPadraoUseCase, IListarMeusAnunciosUseCase listarMeusAnunciosUseCase) {
         this.ui = ui;
         this.usuarioLogado = usuarioLogado;
         this.criarAnuncioUseCase = criarAnuncioUseCase;
         this.criarAnuncioPadraoUseCase = criarAnuncioPadraoUseCase;
+        this.listarMeusAnunciosUseCase = listarMeusAnunciosUseCase;
     }
 
     // loop principal (estava no Main, agora está aqui, organizado)
     public void iniciar() {
         boolean rodando = true;
         while (rodando) {
+            ui.limparTela();
             ui.mostrarMensagem("\n============================");
             ui.mostrarMensagem("      MYHOME - MENU");
             ui.mostrarMensagem("============================");
@@ -62,11 +68,9 @@ public class MenuController {
                         break;
                     case "3":
                         if (usuarioLogado.podeAnunciar())
-                            ui.mostrarMensagem("vai ser implementado ainda o '3' papai");
-                            //fluxoListarMeusAnuncios();
+                            fluxoListarMeusAnuncios();
                         else
                             ui.mostrarErro("Opção inválida ou sem permissão.");
-
                         break;
                     case "0":
                         rodando = false;
@@ -110,6 +114,35 @@ public class MenuController {
                 default:
                     ui.mostrarErro("Opção inválida.");
             }
+        }
+    }
+
+    public void fluxoListarMeusAnuncios(){
+        ui.mostrarMensagem("\n=== MEUS ANÚNCIOS ===");
+
+        try {
+            List<Anuncio> meusAnuncios = listarMeusAnunciosUseCase.execute(usuarioLogado);
+
+            if (meusAnuncios.isEmpty()) {
+                ui.mostrarMensagem("Você ainda não possui anúncios cadastrados.");
+                return;
+            }
+
+            for (Anuncio a : meusAnuncios) {
+                ui.mostrarMensagem("------------------------------------------------");
+                ui.mostrarMensagem("ID: " + a.getId());
+                ui.mostrarMensagem("Título: " + a.getTitulo());
+                ui.mostrarMensagem("Valor: R$ " + a.getValor());
+                ui.mostrarMensagem("Status: " + a.getStatus());
+                ui.mostrarMensagem("Imóvel: " + a.getImovel().getDescricao());
+                ui.mostrarMensagem("------------------------------------------------");
+            }
+
+            // estrategia pra deixar pausado pro usuario ler
+            ui.lerTexto("Pressione ENTER para voltar...");
+
+        } catch (Exception e) {
+            ui.mostrarErro("Erro ao listar anúncios: " + e.getMessage());
         }
     }
 
@@ -167,7 +200,6 @@ public class MenuController {
             return;
         }
 
-        ui.mostrarMensagem("--- Localização ---");
         Endereco endereco = ui.lerEndereco();
 
         ui.mostrarMensagem("\n--- Escolha o Padrão do Imóvel ---");
