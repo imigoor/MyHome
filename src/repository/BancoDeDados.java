@@ -1,13 +1,10 @@
 package repository;
 
-import domain.anuncio.Anuncio;
-import domain.entities.Corretor;
-import domain.entities.Interessado;
-import domain.entities.Usuario;
-import domain.enums.TipoNotificacao;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import domain.anuncio.Anuncio;
+import domain.entities.Usuario;
 
 public class BancoDeDados {
     private static BancoDeDados instanciaDoBanco;
@@ -17,13 +14,7 @@ public class BancoDeDados {
 
     private BancoDeDados(){
         this.tabelaAnuncios = new ArrayList<>();
-        this.tabelaUsuarios = new ArrayList<>();
-
-        Corretor corretor = new Corretor("Flavin", "flavin@gmail.com", "senha","83988770387", null, "CRECI123", null, "114.540.786-90");
-    tabelaUsuarios.add(corretor);
-
-        Interessado interessado = new Interessado("Junior interessado", "interessado@gmail.com", "senha","839123312343", null, "104.623.542-10");
-    tabelaUsuarios.add(interessado);
+        this.tabelaUsuarios = new ArrayList<>();        
     }
 
     public static BancoDeDados getInstance(){

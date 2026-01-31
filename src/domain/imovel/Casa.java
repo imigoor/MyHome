@@ -1,7 +1,5 @@
 package domain.imovel;
 
-import domain.enums.TipoImovel;
-
 public class Casa extends Imovel {
     private boolean possuiQuintal;
     private boolean possuiPiscina;

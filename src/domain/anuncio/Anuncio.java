@@ -1,12 +1,13 @@
 package domain.anuncio;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import domain.entities.Usuario;
 import domain.enums.StatusAnuncio;
 import domain.enums.TipoAnuncio;
 import domain.imovel.Imovel;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 public class Anuncio {
     private UUID id;

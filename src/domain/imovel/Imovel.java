@@ -1,9 +1,8 @@
 package domain.imovel;
 
-import domain.enums.TipoImovel;
-import domain.interfaces.patterns.prototype.Prototype;
-
 import java.util.UUID;
+
+import domain.interfaces.patterns.prototype.Prototype;
 
 public abstract class Imovel implements Prototype<Imovel> {
     private UUID id;

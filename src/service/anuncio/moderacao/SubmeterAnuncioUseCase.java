@@ -7,16 +7,15 @@ import domain.interfaces.patterns.chain.ModeracaoHandler;
 import domain.interfaces.patterns.chain.ValidadorDescricao;
 import domain.interfaces.patterns.chain.ValidadorPreco;
 import domain.interfaces.patterns.chain.ValidadorTexto;
-import repository.anuncio.AnuncioRepository;
 
-public class SubmeterAnuncioUseCase {
-    private AnuncioRepository anuncioRepository;
+public class SubmeterAnuncioUseCase implements ISubmeterAnuncioUseCase {    
 
-    public SubmeterAnuncioUseCase(AnuncioRepository anuncioRepository) {
-        this.anuncioRepository = anuncioRepository;
+    public SubmeterAnuncioUseCase() {
+        
     }
 
-    public void execute(Anuncio anuncio) {
+    @Override
+    public String execute(Anuncio anuncio) {
         System.out.println("\n--- Iniciando Processo de Moderação ---");
         
         // 1. Instanciar os Validadores (Handlers)
@@ -37,14 +36,12 @@ public class SubmeterAnuncioUseCase {
 
             // Se chegou aqui, não houve erro
             anuncio.setStatus(StatusAnuncio.ATIVO);
-            System.out.println("SUCESSO: Anuncio Aprovado e Publicado!");
+            return "SUCESSO: Anuncio Aprovado e Publicado! \nStatus Final do Anúncio: " + anuncio.getStatus();
 
         } catch (ModeracaoException e) {
             // Se algum handler reclamou
             anuncio.setStatus(StatusAnuncio.SUSPENSO);
-            System.err.println("FALHA NA MODERAÇÃO: " + e.getMessage());
-        }
-        
-        System.out.println("Status Final do Anúncio: " + anuncio.getStatus());
+            return "FALHA NA MODERAÇÃO: " + e.getMessage();
+        }                
     }
 }

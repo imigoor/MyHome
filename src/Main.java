@@ -11,6 +11,7 @@ import service.anuncio.criar.ICriarAnuncioPadraoUseCase;
 import service.anuncio.criar.ICriarAnuncioUseCase;
 import service.anuncio.listar.IListarMeusAnunciosUseCase;
 import service.anuncio.listar.ListarMeusAnunciosUseCase;
+import service.anuncio.moderacao.ISubmeterAnuncioUseCase;
 import service.anuncio.moderacao.SubmeterAnuncioUseCase;
 import service.login.IRealizarLoginUseCase;
 import service.login.RealizarLoginUseCase;
@@ -52,8 +53,7 @@ public class Main {
         ICriarAnuncioPadraoUseCase criarPadraoUseCase = new CriarAnuncioPadraoUseCase(anuncioRepo);
         IListarMeusAnunciosUseCase listarMeusAnunciosUseCase = new ListarMeusAnunciosUseCase(anuncioRepo);
         IBuscarAnunciosUseCase buscarUseCase = new BuscarAnunciosUseCase(anuncioRepo);
-        SubmeterAnuncioUseCase submeterAnuncioUseCase = new SubmeterAnuncioUseCase(anuncioRepo);
-
+        ISubmeterAnuncioUseCase submeterAnuncioUseCase = new SubmeterAnuncioUseCase();        
 
         MenuController menu = new MenuController(ui, usuarioLogado, criarManualUseCase, criarPadraoUseCase, listarMeusAnunciosUseCase, buscarUseCase, submeterAnuncioUseCase);
         menu.iniciar();

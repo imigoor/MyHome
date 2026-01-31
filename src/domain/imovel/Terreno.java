@@ -1,7 +1,5 @@
 package domain.imovel;
 
-import domain.enums.TipoImovel;
-
 public class Terreno extends Imovel {
     private boolean ehMurado;
     private String topografia;

@@ -1,13 +1,11 @@
 package patterns.Prototype;
 
-import domain.anuncio.Anuncio;
+import java.util.HashMap;
+import java.util.Map;
+
 import domain.imovel.Apartamento;
 import domain.imovel.Casa;
 import domain.imovel.Imovel;
-
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class AnuncioPrototypeRegistry {

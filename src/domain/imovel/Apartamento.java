@@ -1,7 +1,5 @@
 package domain.imovel;
 
-import domain.enums.TipoImovel;
-
 public class Apartamento extends Imovel {
     private int andar;
     private boolean possuiElevador;

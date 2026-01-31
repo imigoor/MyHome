@@ -1,24 +1,21 @@
 package controller;
 
-import domain.enums.StatusAnuncio;
-import domain.enums.TipoAnuncio;
-import domain.imovel.Endereco;
-import domain.interfaces.patterns.decorator.IBuscaAnuncio;
-import patterns.decorator.*;
-import repository.anuncio.AnuncioRepository;
-import service.anuncio.buscar.IBuscarAnunciosUseCase;
-import service.anuncio.criar.ICriarAnuncioPadraoUseCase;
-import service.anuncio.criar.ICriarAnuncioUseCase;
-import domain.anuncio.Anuncio;
-import domain.entities.Usuario;
-import service.anuncio.listar.IListarMeusAnunciosUseCase;
-import service.anuncio.moderacao.SubmeterAnuncioUseCase;
-import view.ConsoleUI;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import domain.anuncio.Anuncio;
+import domain.entities.Usuario;
+import domain.enums.StatusAnuncio;
+import domain.enums.TipoAnuncio;
+import domain.imovel.Endereco;
+import service.anuncio.buscar.IBuscarAnunciosUseCase;
+import service.anuncio.criar.ICriarAnuncioPadraoUseCase;
+import service.anuncio.criar.ICriarAnuncioUseCase;
+import service.anuncio.listar.IListarMeusAnunciosUseCase;
+import service.anuncio.moderacao.ISubmeterAnuncioUseCase;
+import view.ConsoleUI;
 
 public class MenuController {
     private ConsoleUI ui;
@@ -29,15 +26,15 @@ public class MenuController {
     private ICriarAnuncioPadraoUseCase criarAnuncioPadraoUseCase;
     private IListarMeusAnunciosUseCase listarMeusAnunciosUseCase;
     private IBuscarAnunciosUseCase buscarAnunciosUseCase;
-    private SubmeterAnuncioUseCase submeterAnuncioUseCase;
+    private ISubmeterAnuncioUseCase submeterAnuncioUseCase;
 
     public MenuController(ConsoleUI ui,
                           Usuario usuarioLogado,
                           ICriarAnuncioUseCase criarAnuncioUseCase,
                           ICriarAnuncioPadraoUseCase criarAnuncioPadraoUseCase,
                           IListarMeusAnunciosUseCase listarMeusAnunciosUseCase,
-                          IBuscarAnunciosUseCase buscarAnunciosUseCase
-                          SubmeterAnuncioUseCase submeterAnuncioUseCase) {
+                          IBuscarAnunciosUseCase buscarAnunciosUseCase,
+                          ISubmeterAnuncioUseCase submeterAnuncioUseCase) {
         this.ui = ui;
         this.usuarioLogado = usuarioLogado;
         this.criarAnuncioUseCase = criarAnuncioUseCase;
@@ -190,9 +187,11 @@ public class MenuController {
         }
 
         // 5. CHAMA O CHAIN OF RESPONSIBILITY
-        submeterAnuncioUseCase.execute(anuncioSelecionado);
+        String resultado = submeterAnuncioUseCase.execute(anuncioSelecionado);
+        ui.mostrarMensagem(resultado);
         
         ui.lerTexto("Pressione ENTER para continuar...");
+    }
 
     // sub menu para escolher entre criar anuncio manualmente ou com informacoes pre definidas
     private void fluxoMenuCriacao() {
