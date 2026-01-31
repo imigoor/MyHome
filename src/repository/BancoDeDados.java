@@ -1,13 +1,10 @@
 package repository;
 
-import domain.anuncio.Anuncio;
-import domain.entities.Corretor;
-import domain.entities.Interessado;
-import domain.entities.Usuario;
-import domain.enums.TipoNotificacao;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import domain.anuncio.Anuncio;
+import domain.entities.Usuario;
 
 public class BancoDeDados {
     private static BancoDeDados instanciaDoBanco;
@@ -17,7 +14,7 @@ public class BancoDeDados {
 
     private BancoDeDados(){
         this.tabelaAnuncios = new ArrayList<>();
-        this.tabelaUsuarios = new ArrayList<>();
+        this.tabelaUsuarios = new ArrayList<>();        
     }
 
     public static BancoDeDados getInstance(){

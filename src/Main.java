@@ -11,6 +11,8 @@ import service.anuncio.criar.ICriarAnuncioPadraoUseCase;
 import service.anuncio.criar.ICriarAnuncioUseCase;
 import service.anuncio.listar.IListarMeusAnunciosUseCase;
 import service.anuncio.listar.ListarMeusAnunciosUseCase;
+import service.anuncio.moderacao.ISubmeterAnuncioUseCase;
+import service.anuncio.moderacao.SubmeterAnuncioUseCase;
 import service.login.IRealizarLoginUseCase;
 import service.login.RealizarLoginUseCase;
 import view.ConsoleUI;
@@ -21,7 +23,7 @@ public class Main {
         ConsoleUI ui = new ConsoleUI();
         UsuarioRepository userRepo = new UsuarioRepository();
         AnuncioRepository anuncioRepo = new AnuncioRepository();
-        IRealizarLoginUseCase loginUC = new RealizarLoginUseCase(userRepo);
+        IRealizarLoginUseCase loginUC = new RealizarLoginUseCase(userRepo);        
 
         try {
             infra.CargaDeDados loader = new CargaDeDados(userRepo, anuncioRepo);
@@ -51,8 +53,9 @@ public class Main {
         ICriarAnuncioPadraoUseCase criarPadraoUseCase = new CriarAnuncioPadraoUseCase(anuncioRepo);
         IListarMeusAnunciosUseCase listarMeusAnunciosUseCase = new ListarMeusAnunciosUseCase(anuncioRepo);
         IBuscarAnunciosUseCase buscarUseCase = new BuscarAnunciosUseCase(anuncioRepo);
+        ISubmeterAnuncioUseCase submeterAnuncioUseCase = new SubmeterAnuncioUseCase();        
 
-        MenuController menu = new MenuController(ui, usuarioLogado, criarManualUseCase, criarPadraoUseCase, listarMeusAnunciosUseCase, buscarUseCase);
+        MenuController menu = new MenuController(ui, usuarioLogado, criarManualUseCase, criarPadraoUseCase, listarMeusAnunciosUseCase, buscarUseCase, submeterAnuncioUseCase);
         menu.iniciar();
     }
 }

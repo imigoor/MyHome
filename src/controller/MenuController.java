@@ -1,22 +1,21 @@
 package controller;
 
-import domain.enums.TipoAnuncio;
-import domain.imovel.Endereco;
-import domain.interfaces.patterns.decorator.IBuscaAnuncio;
-import patterns.decorator.*;
-import repository.anuncio.AnuncioRepository;
-import service.anuncio.buscar.IBuscarAnunciosUseCase;
-import service.anuncio.criar.ICriarAnuncioPadraoUseCase;
-import service.anuncio.criar.ICriarAnuncioUseCase;
-import domain.anuncio.Anuncio;
-import domain.entities.Usuario;
-import service.anuncio.listar.IListarMeusAnunciosUseCase;
-import view.ConsoleUI;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import domain.anuncio.Anuncio;
+import domain.entities.Usuario;
+import domain.enums.StatusAnuncio;
+import domain.enums.TipoAnuncio;
+import domain.imovel.Endereco;
+import service.anuncio.buscar.IBuscarAnunciosUseCase;
+import service.anuncio.criar.ICriarAnuncioPadraoUseCase;
+import service.anuncio.criar.ICriarAnuncioUseCase;
+import service.anuncio.listar.IListarMeusAnunciosUseCase;
+import service.anuncio.moderacao.ISubmeterAnuncioUseCase;
+import view.ConsoleUI;
 
 public class MenuController {
     private ConsoleUI ui;
@@ -27,19 +26,22 @@ public class MenuController {
     private ICriarAnuncioPadraoUseCase criarAnuncioPadraoUseCase;
     private IListarMeusAnunciosUseCase listarMeusAnunciosUseCase;
     private IBuscarAnunciosUseCase buscarAnunciosUseCase;
+    private ISubmeterAnuncioUseCase submeterAnuncioUseCase;
 
     public MenuController(ConsoleUI ui,
                           Usuario usuarioLogado,
                           ICriarAnuncioUseCase criarAnuncioUseCase,
                           ICriarAnuncioPadraoUseCase criarAnuncioPadraoUseCase,
                           IListarMeusAnunciosUseCase listarMeusAnunciosUseCase,
-                          IBuscarAnunciosUseCase buscarAnunciosUseCase) {
+                          IBuscarAnunciosUseCase buscarAnunciosUseCase,
+                          ISubmeterAnuncioUseCase submeterAnuncioUseCase) {
         this.ui = ui;
         this.usuarioLogado = usuarioLogado;
         this.criarAnuncioUseCase = criarAnuncioUseCase;
         this.criarAnuncioPadraoUseCase = criarAnuncioPadraoUseCase;
         this.listarMeusAnunciosUseCase = listarMeusAnunciosUseCase;
         this.buscarAnunciosUseCase = buscarAnunciosUseCase;
+        this.submeterAnuncioUseCase = submeterAnuncioUseCase;
     }
 
     // loop principal (estava no Main, agora está aqui, organizado)
@@ -59,6 +61,7 @@ public class MenuController {
             if (usuarioLogado.podeAnunciar()) {
                 ui.mostrarMensagem("2 - Criar Anúncio (RF01/RF02)");
                 ui.mostrarMensagem("3 - Meus Anúncios");
+                ui.mostrarMensagem("4 - Publicar/Submeter Anúncio (RF03 - Chain)");
             }
 
             ui.mostrarMensagem("0. Sair");
@@ -82,6 +85,10 @@ public class MenuController {
                             fluxoListarMeusAnuncios();
                         else
                             ui.mostrarErro("Opção inválida ou sem permissão.");
+                        break;
+                    case "4": // <--- CHAMADA DO NOVO FLUXO
+                        if (usuarioLogado.podeAnunciar()) fluxoSubmeterAnuncio();
+                        else ui.mostrarErro("Sem permissão.");
                         break;
                     case "0":
                         rodando = false;
@@ -144,6 +151,46 @@ public class MenuController {
             }
         }
         ui.lerTexto("Enter para voltar...");
+    }
+    
+    private void fluxoSubmeterAnuncio() {
+        ui.mostrarMensagem("\n=== PUBLICAR ANÚNCIO (Moderação) ===");
+
+        // 1. Pega a lista atualizada
+        List<Anuncio> meusAnuncios = listarMeusAnunciosUseCase.execute(usuarioLogado);
+
+        if (meusAnuncios.isEmpty()) {
+            ui.mostrarErro("Você não tem anúncios para publicar.");
+            return;
+        }
+
+        // 2. Mostra com índice para facilitar a escolha
+        for (int i = 0; i < meusAnuncios.size(); i++) {
+            Anuncio a = meusAnuncios.get(i);
+            System.out.println("[" + i + "] " + a.getTitulo() + " | Valor: " + a.getValor() + " | Status: " + a.getStatus());
+        }
+
+        // 3. Usuário escolhe
+        Integer index = ui.lerInteiro("Digite o número do anúncio que deseja publicar");
+
+        if (index < 0 || index >= meusAnuncios.size()) {
+            ui.mostrarErro("Opção inválida.");
+            return;
+        }
+
+        Anuncio anuncioSelecionado = meusAnuncios.get(index);
+
+        // 4. Validação básica de UI antes de chamar o Chain
+        if (anuncioSelecionado.getStatus() == StatusAnuncio.ATIVO) {
+            ui.mostrarErro("Este anúncio já está publicado!");
+            return;
+        }
+
+        // 5. CHAMA O CHAIN OF RESPONSIBILITY
+        String resultado = submeterAnuncioUseCase.execute(anuncioSelecionado);
+        ui.mostrarMensagem(resultado);
+        
+        ui.lerTexto("Pressione ENTER para continuar...");
     }
 
     // sub menu para escolher entre criar anuncio manualmente ou com informacoes pre definidas

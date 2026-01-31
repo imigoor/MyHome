@@ -1,11 +1,10 @@
 package view;
 
-import domain.anuncio.Anuncio;
-import domain.imovel.Endereco;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+
+import domain.imovel.Endereco;
 
 public class ConsoleUI {
     private Scanner scanner;
