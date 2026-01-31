@@ -1,5 +1,5 @@
 TITULO;VALOR;TIPO_ANUNCIO;TIPO_IMOVEL;EMAIL_DONO;DESCRICAO;RUA;BAIRRO;CIDADE;ESTADO
-Casa de Praia;450000.00;VENDA;CASA;carlos@imobiliaria.com;Casa com varanda e vista pro mar;Av. Oceano;Cabo Branco;Joao Pessoa;PB
+Casa de Praia;450000.00;VENDA;CASA;carlos@imobiliaria.com;Casa com varanda e vista pro mar;Av. Oceano;Bairro de Campina;Campina Grande;PB
 Apto Centro;1200.00;ALUGUEL;APARTAMENTO;ana@imobiliaria.com;Apto simples perto do trabalho;Rua da Republica;Centro;Joao Pessoa;PB
 Terreno Plano;80000.00;VENDA;TERRENO;ana@imobiliaria.com;Terreno murado pronto para construir;Rua do Campo;Bancarios;Joao Pessoa;PB
 Mansão de Luxo;1500000.00;VENDA;CASA;ana@imobiliaria.com;Casa alto padrão com piscina e churrasqueira;Rua dos Ricos;Altiplano;Joao Pessoa;PB

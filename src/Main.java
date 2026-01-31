@@ -3,6 +3,8 @@ import domain.entities.Usuario;
 import infra.CargaDeDados;
 import repository.anuncio.AnuncioRepository;
 import repository.usuario.UsuarioRepository;
+import service.anuncio.buscar.BuscarAnunciosUseCase;
+import service.anuncio.buscar.IBuscarAnunciosUseCase;
 import service.anuncio.criar.CriarAnuncioPadraoUseCase;
 import service.anuncio.criar.CriarAnuncioUseCase;
 import service.anuncio.criar.ICriarAnuncioPadraoUseCase;
@@ -39,7 +41,6 @@ public class Main {
 
             try {
                 usuarioLogado = loginUC.execute(email, senha);
-                ui.mostrarMensagem("Olá, " + usuarioLogado.getNome() + "! Login realizado.");
             } catch (Exception e) {
                 ui.mostrarErro(e.getMessage());
             }
@@ -49,8 +50,9 @@ public class Main {
         ICriarAnuncioUseCase criarManualUseCase = new CriarAnuncioUseCase(anuncioRepo);
         ICriarAnuncioPadraoUseCase criarPadraoUseCase = new CriarAnuncioPadraoUseCase(anuncioRepo);
         IListarMeusAnunciosUseCase listarMeusAnunciosUseCase = new ListarMeusAnunciosUseCase(anuncioRepo);
+        IBuscarAnunciosUseCase buscarUseCase = new BuscarAnunciosUseCase(anuncioRepo);
 
-        MenuController menu = new MenuController(ui, usuarioLogado, criarManualUseCase, criarPadraoUseCase, listarMeusAnunciosUseCase);
+        MenuController menu = new MenuController(ui, usuarioLogado, criarManualUseCase, criarPadraoUseCase, listarMeusAnunciosUseCase, buscarUseCase);
         menu.iniciar();
     }
 }
