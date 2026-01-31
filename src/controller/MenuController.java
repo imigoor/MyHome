@@ -180,8 +180,6 @@ public class MenuController {
         Anuncio anuncioSelecionado = meusAnuncios.get(index);
 
         // 4. Validação básica de UI antes de chamar o Chain
-        // Gustavo - Validar com equipe se querem que deixe como está, ou implementar Enum para esse tipo de validação, já que
-        // não podemos utilizar instanceOf
         if (anuncioSelecionado.jaEstaPublicado()) {
             ui.mostrarErro("Este anúncio já está publicado!");
             return;
