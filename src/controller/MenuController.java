@@ -1,13 +1,7 @@
 package controller;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import domain.anuncio.Anuncio;
 import domain.entities.Usuario;
-import domain.enums.StatusAnuncio;
 import domain.enums.TipoAnuncio;
 import domain.imovel.Endereco;
 import service.anuncio.buscar.IBuscarAnunciosUseCase;
@@ -16,6 +10,11 @@ import service.anuncio.criar.ICriarAnuncioUseCase;
 import service.anuncio.listar.IListarMeusAnunciosUseCase;
 import service.anuncio.moderacao.ISubmeterAnuncioUseCase;
 import view.ConsoleUI;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MenuController {
     private ConsoleUI ui;
@@ -167,7 +166,7 @@ public class MenuController {
         // 2. Mostra com índice para facilitar a escolha
         for (int i = 0; i < meusAnuncios.size(); i++) {
             Anuncio a = meusAnuncios.get(i);
-            System.out.println("[" + i + "] " + a.getTitulo() + " | Valor: " + a.getValor() + " | Status: " + a.getStatus());
+            System.out.println("[" + i + "] " + a.getTitulo() + " | Valor: " + a.getValor() + " | Status: " + a.getEstadoAtual());
         }
 
         // 3. Usuário escolhe
@@ -181,7 +180,9 @@ public class MenuController {
         Anuncio anuncioSelecionado = meusAnuncios.get(index);
 
         // 4. Validação básica de UI antes de chamar o Chain
-        if (anuncioSelecionado.getStatus() == StatusAnuncio.ATIVO) {
+        // Gustavo - Validar com equipe se querem que deixe como está, ou implementar Enum para esse tipo de validação, já que
+        // não podemos utilizar instanceOf
+        if (anuncioSelecionado.jaEstaPublicado()) {
             ui.mostrarErro("Este anúncio já está publicado!");
             return;
         }
@@ -242,7 +243,7 @@ public class MenuController {
                 ui.mostrarMensagem("ID: " + a.getId());
                 ui.mostrarMensagem("Título: " + a.getTitulo());
                 ui.mostrarMensagem("Valor: R$ " + a.getValor());
-                ui.mostrarMensagem("Status: " + a.getStatus());
+                ui.mostrarMensagem("Status: " + a.getEstadoAtual());
                 ui.mostrarMensagem("Imóvel: " + a.getImovel().getDescricao());
                 ui.mostrarMensagem("------------------------------------------------");
             }

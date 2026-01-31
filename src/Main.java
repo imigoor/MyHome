@@ -49,13 +49,25 @@ public class Main {
         }
 
         // UseCases
+        // Gustavo - Validar se podemos extrair método de criação do controller
         ICriarAnuncioUseCase criarManualUseCase = new CriarAnuncioUseCase(anuncioRepo);
         ICriarAnuncioPadraoUseCase criarPadraoUseCase = new CriarAnuncioPadraoUseCase(anuncioRepo);
         IListarMeusAnunciosUseCase listarMeusAnunciosUseCase = new ListarMeusAnunciosUseCase(anuncioRepo);
         IBuscarAnunciosUseCase buscarUseCase = new BuscarAnunciosUseCase(anuncioRepo);
-        ISubmeterAnuncioUseCase submeterAnuncioUseCase = new SubmeterAnuncioUseCase();        
+        ISubmeterAnuncioUseCase submeterAnuncioUseCase = new SubmeterAnuncioUseCase();
 
         MenuController menu = new MenuController(ui, usuarioLogado, criarManualUseCase, criarPadraoUseCase, listarMeusAnunciosUseCase, buscarUseCase, submeterAnuncioUseCase);
+        // MenuController menu = getMenuController(anuncioRepo, ui, usuarioLogado);
         menu.iniciar();
     }
+
+//    private static MenuController getMenuController(AnuncioRepository anuncioRepo, ConsoleUI ui, Usuario usuarioLogado) {
+//        ICriarAnuncioUseCase criarManualUseCase = new CriarAnuncioUseCase(anuncioRepo);
+//        ICriarAnuncioPadraoUseCase criarPadraoUseCase = new CriarAnuncioPadraoUseCase(anuncioRepo);
+//        IListarMeusAnunciosUseCase listarMeusAnunciosUseCase = new ListarMeusAnunciosUseCase(anuncioRepo);
+//        IBuscarAnunciosUseCase buscarUseCase = new BuscarAnunciosUseCase(anuncioRepo);
+//        ISubmeterAnuncioUseCase submeterAnuncioUseCase = new SubmeterAnuncioUseCase();
+//
+//        return new MenuController(ui, usuarioLogado, criarManualUseCase, criarPadraoUseCase, listarMeusAnunciosUseCase, buscarUseCase, submeterAnuncioUseCase);
+//    }
 }

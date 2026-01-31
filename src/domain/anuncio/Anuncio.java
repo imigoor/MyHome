@@ -1,13 +1,14 @@
 package domain.anuncio;
 
+import domain.entities.Usuario;
+import domain.enums.TipoAnuncio;
+import domain.imovel.Imovel;
+import domain.interfaces.patterns.state.EstadoAnuncio;
+import patterns.State.EstadoRascunho;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
-import domain.entities.Usuario;
-import domain.enums.StatusAnuncio;
-import domain.enums.TipoAnuncio;
-import domain.imovel.Imovel;
 
 public class Anuncio {
     private UUID id;
@@ -16,7 +17,7 @@ public class Anuncio {
     private LocalDateTime dataCriacao;
 
     private TipoAnuncio tipoAnuncio;
-    private StatusAnuncio status;
+    private EstadoAnuncio estadoAtual;
 
     private Imovel imovel;
     private Usuario anunciante;
@@ -29,8 +30,38 @@ public class Anuncio {
         this.imovel = imovel;
         this.anunciante = usuario;
 
-        this.status = StatusAnuncio.RASCUNHO;
+        this.estadoAtual = new EstadoRascunho();
         this.dataCriacao = LocalDateTime.now();
+    }
+
+    public void mudarEstadoAnuncio(EstadoAnuncio estadoAnuncio){
+        this.estadoAtual = estadoAnuncio;
+
+//        lógica do observer
+    }
+
+    public void submeterAModeracao(){
+        this.estadoAtual.enviarParaModeracao(this);
+    }
+
+    public void aprovarModeracao(){
+        this.estadoAtual.aprovar(this);
+    }
+
+    public void reprovarModeracao(){
+        this.estadoAtual.reprovar(this);
+    }
+
+    public void venderAnuncio() {
+        this.estadoAtual.vender(this);
+    }
+
+    public void suspenderAnuncio() {
+        this.estadoAtual.suspender(this);
+    }
+
+    public boolean jaEstaPublicado() {
+        return this.estadoAtual.jaEstaPublicado();
     }
 
     public UUID getId() { return id; }
@@ -45,8 +76,13 @@ public class Anuncio {
     public TipoAnuncio getTipoAnuncio() { return tipoAnuncio; }
     public void setTipoAnuncio(TipoAnuncio tipoAnuncio) { this.tipoAnuncio = tipoAnuncio; }
 
-    public StatusAnuncio getStatus() { return status; }
-    public void setStatus(StatusAnuncio status) { this.status = status; }
+    public String getEstadoAtual() { return estadoAtual.getNomeEstado(); }
+
+    // Método deve ser utilizado apenas na criação de anúncios obtidos da planilha CSV, para aparecer ans buscas de testes
+    // Validar se vamos deixar assim depois
+    public void setEstadoAtual(EstadoAnuncio estadoAtual) {
+        this.estadoAtual = estadoAtual;
+    }
 
     public Imovel getImovel() { return imovel; }
     public void setImovel(Imovel imovel) { this.imovel = imovel; }

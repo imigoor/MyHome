@@ -5,7 +5,6 @@ import domain.entities.Corretor;
 import domain.entities.Interessado;
 import domain.entities.Proprietario;
 import domain.entities.Usuario;
-import domain.enums.StatusAnuncio;
 import domain.enums.TipoAnuncio;
 import domain.imovel.*;
 import repository.anuncio.AnuncioRepository;
@@ -92,9 +91,6 @@ public class CargaDeDados {
                 Imovel imovel = criarImovelDoCSV(tipoImovel, endereco, descricao);
 
                 Anuncio anuncio = new Anuncio(titulo, valor, tipoAnuncio, imovel, dono);
-
-                // Força o status para ATIVO para aparecer nas buscas de teste
-                anuncio.setStatus(StatusAnuncio.RASCUNHO);
 
                 anuncioRepository.salvar(anuncio);
             }
