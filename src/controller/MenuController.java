@@ -2,6 +2,10 @@ package controller;
 
 import domain.enums.TipoAnuncio;
 import domain.imovel.Endereco;
+import domain.interfaces.patterns.decorator.IBuscaAnuncio;
+import patterns.decorator.*;
+import repository.anuncio.AnuncioRepository;
+import service.anuncio.buscar.IBuscarAnunciosUseCase;
 import service.anuncio.criar.ICriarAnuncioPadraoUseCase;
 import service.anuncio.criar.ICriarAnuncioUseCase;
 import domain.anuncio.Anuncio;
@@ -10,6 +14,7 @@ import service.anuncio.listar.IListarMeusAnunciosUseCase;
 import view.ConsoleUI;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,14 +26,20 @@ public class MenuController {
     private ICriarAnuncioUseCase criarAnuncioUseCase;
     private ICriarAnuncioPadraoUseCase criarAnuncioPadraoUseCase;
     private IListarMeusAnunciosUseCase listarMeusAnunciosUseCase;
+    private IBuscarAnunciosUseCase buscarAnunciosUseCase;
 
-    public MenuController(ConsoleUI ui, Usuario usuarioLogado, ICriarAnuncioUseCase criarAnuncioUseCase,
-                          ICriarAnuncioPadraoUseCase criarAnuncioPadraoUseCase, IListarMeusAnunciosUseCase listarMeusAnunciosUseCase) {
+    public MenuController(ConsoleUI ui,
+                          Usuario usuarioLogado,
+                          ICriarAnuncioUseCase criarAnuncioUseCase,
+                          ICriarAnuncioPadraoUseCase criarAnuncioPadraoUseCase,
+                          IListarMeusAnunciosUseCase listarMeusAnunciosUseCase,
+                          IBuscarAnunciosUseCase buscarAnunciosUseCase) {
         this.ui = ui;
         this.usuarioLogado = usuarioLogado;
         this.criarAnuncioUseCase = criarAnuncioUseCase;
         this.criarAnuncioPadraoUseCase = criarAnuncioPadraoUseCase;
         this.listarMeusAnunciosUseCase = listarMeusAnunciosUseCase;
+        this.buscarAnunciosUseCase = buscarAnunciosUseCase;
     }
 
     // loop principal (estava no Main, agora está aqui, organizado)
@@ -36,6 +47,7 @@ public class MenuController {
         boolean rodando = true;
         while (rodando) {
             ui.limparTela();
+            ui.mostrarMensagem("Olá, " + usuarioLogado.getNome() + "!");
             ui.mostrarMensagem("\n============================");
             ui.mostrarMensagem("      MYHOME - MENU");
             ui.mostrarMensagem("============================");
@@ -57,10 +69,9 @@ public class MenuController {
             try {
                 switch (opcao) {
                     case "1":
-                        // fluxoBuscar();
+                        fluxoBuscar();
                         break;
                     case "2":
-                        // se o caba for malandro e digitar "2" mesmo sem ver o menu a gente dale o bloqueio
                         if (usuarioLogado.podeAnunciar())
                             fluxoMenuCriacao();
                         else
@@ -82,6 +93,57 @@ public class MenuController {
                 ui.mostrarErro(e.getMessage());
             }
         }
+    }
+
+    private void fluxoBuscar() {
+        ui.limparTela();
+        ui.mostrarMensagem("=== BUSCA AVANÇADA (RF06 - Factory) ===");
+
+        Map<String, Object> filtros = new HashMap<>();
+        boolean adicionandoFiltros = true;
+
+        while (adicionandoFiltros) {
+            ui.mostrarMensagem("\nFiltros atuais aplicados na memória.");
+            ui.mostrarMensagem("1 - Adicionar Filtro de Preço Máximo");
+            ui.mostrarMensagem("2 - Adicionar Filtro de Cidade");
+            ui.mostrarMensagem("3 - Adicionar Filtro de Tipo de Imóvel");
+            ui.mostrarMensagem("0 - EXECUTAR BUSCA AGORA");
+
+            String op = ui.lerTexto("Opção");
+
+            switch (op) {
+                case "1":
+                    Double max = ui.lerDecimal("Valor");
+                    filtros.put("precoMaximo", BigDecimal.valueOf(max));
+                    break;
+                case "2":
+                    String cidade = ui.lerTexto("Cidade");
+                    filtros.put("cidade", cidade);
+                    break;
+                case "3":
+                    String tipo = ui.lerTexto("Tipo");
+                    filtros.put("tipoImovel", tipo);
+                    break;
+                case "0":
+                    adicionandoFiltros = false;
+                    break;
+                default:
+                    ui.mostrarErro("Inválido");
+            }
+        }
+
+        ui.mostrarMensagem("\nProcessando filtros...");
+        List<Anuncio> resultados = buscarAnunciosUseCase.execute(filtros);
+
+        if (resultados.isEmpty()) {
+            ui.mostrarMensagem("Nenhum imóvel encontrado com esses filtros.");
+        } else {
+            ui.mostrarMensagem("Encontramos " + resultados.size() + " imóveis:\n");
+            for (Anuncio a : resultados) {
+                ui.mostrarMensagem("- " + a.getTitulo() + " | R$ " + a.getValor() + " | " + a.getImovel().getEndereco().getCidade());
+            }
+        }
+        ui.lerTexto("Enter para voltar...");
     }
 
     // sub menu para escolher entre criar anuncio manualmente ou com informacoes pre definidas
