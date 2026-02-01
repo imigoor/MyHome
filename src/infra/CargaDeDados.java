@@ -7,6 +7,7 @@ import domain.entities.Proprietario;
 import domain.entities.Usuario;
 import domain.enums.TipoAnuncio;
 import domain.imovel.*;
+import domain.interfaces.patterns.observer.AnuncioObserver;
 import repository.anuncio.AnuncioRepository;
 import repository.usuario.UsuarioRepository;
 
@@ -18,10 +19,16 @@ import java.math.BigDecimal;
 public class CargaDeDados {
     private final UsuarioRepository usuarioRepository;
     private final AnuncioRepository anuncioRepository;
+    private final AnuncioObserver anuncioObserver;
 
-    public CargaDeDados(UsuarioRepository usuarioRepository, AnuncioRepository anuncioRepository) {
+    public CargaDeDados(
+            UsuarioRepository usuarioRepository,
+            AnuncioRepository anuncioRepository,
+            AnuncioObserver anuncioObserver
+    ) {
         this.usuarioRepository = usuarioRepository;
         this.anuncioRepository = anuncioRepository;
+        this.anuncioObserver = anuncioObserver;
     }
 
     public void carregarTudo() {
@@ -91,6 +98,7 @@ public class CargaDeDados {
                 Imovel imovel = criarImovelDoCSV(tipoImovel, endereco, descricao);
 
                 Anuncio anuncio = new Anuncio(titulo, valor, tipoAnuncio, imovel, dono);
+                anuncio.addObserver(anuncioObserver);
 
                 anuncioRepository.salvar(anuncio);
             }

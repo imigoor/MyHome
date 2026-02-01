@@ -3,11 +3,14 @@ package domain.anuncio;
 import domain.entities.Usuario;
 import domain.enums.TipoAnuncio;
 import domain.imovel.Imovel;
+import domain.interfaces.patterns.observer.AnuncioObserver;
 import domain.interfaces.patterns.state.EstadoAnuncio;
 import patterns.State.EstadoRascunho;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Anuncio {
@@ -22,6 +25,8 @@ public class Anuncio {
     private Imovel imovel;
     private Usuario anunciante;
 
+    private final List<AnuncioObserver> observers = new ArrayList<>();
+
     public Anuncio(String titulo, BigDecimal valor, TipoAnuncio tipoAnuncio, Imovel imovel, Usuario usuario){
         this.id = UUID.randomUUID();
         this.titulo = titulo;
@@ -34,10 +39,22 @@ public class Anuncio {
         this.dataCriacao = LocalDateTime.now();
     }
 
-    public void mudarEstadoAnuncio(EstadoAnuncio estadoAnuncio){
-        this.estadoAtual = estadoAnuncio;
+    // Observer
+    public void addObserver(AnuncioObserver observer) {
+        this.observers.add(observer);
+    }
 
-//        lógica do observer
+    private void notificarObservers(String estadoAnterior, String estadoAtual) {
+        for (AnuncioObserver observer : observers) {
+            observer.onEstadoAlterado(this, estadoAnterior, estadoAtual);
+        }
+    }
+
+    // State
+    public void mudarEstadoAnuncio(EstadoAnuncio novoEstado){
+        String estadoAnterior = this.estadoAtual.getNomeEstado();
+        this.estadoAtual = novoEstado;
+        notificarObservers(estadoAnterior, novoEstado.getNomeEstado());
     }
 
     public void submeterAModeracao(){
@@ -64,6 +81,7 @@ public class Anuncio {
         return this.estadoAtual.jaEstaPublicado();
     }
 
+    // Getters e Setters
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
 
@@ -79,7 +97,6 @@ public class Anuncio {
     public String getEstadoAtual() { return estadoAtual.getNomeEstado(); }
 
     // Método deve ser utilizado apenas na criação de anúncios obtidos da planilha CSV, para aparecer ans buscas de testes
-    // Validar se vamos deixar assim depois
     public void setEstadoAtual(EstadoAnuncio estadoAtual) {
         this.estadoAtual = estadoAtual;
     }

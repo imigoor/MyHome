@@ -1,6 +1,9 @@
 import controller.MenuController;
 import domain.entities.Usuario;
+import domain.interfaces.patterns.strategy.NotificacaoStrategy;
 import infra.CargaDeDados;
+import patterns.Observer.NotificacaoAnuncioObserver;
+import patterns.strategy.EmailNotificacaoStrategy;
 import repository.anuncio.AnuncioRepository;
 import repository.usuario.UsuarioRepository;
 import service.anuncio.buscar.BuscarAnunciosUseCase;
@@ -13,6 +16,7 @@ import service.anuncio.listar.IListarMeusAnunciosUseCase;
 import service.anuncio.listar.ListarMeusAnunciosUseCase;
 import service.anuncio.moderacao.ISubmeterAnuncioUseCase;
 import service.anuncio.moderacao.SubmeterAnuncioUseCase;
+import service.anuncio.notificar.NotificacaoLogService;
 import service.login.IRealizarLoginUseCase;
 import service.login.RealizarLoginUseCase;
 import view.ConsoleUI;
@@ -23,10 +27,17 @@ public class Main {
         ConsoleUI ui = new ConsoleUI();
         UsuarioRepository userRepo = new UsuarioRepository();
         AnuncioRepository anuncioRepo = new AnuncioRepository();
-        IRealizarLoginUseCase loginUC = new RealizarLoginUseCase(userRepo);        
+        IRealizarLoginUseCase loginUC = new RealizarLoginUseCase(userRepo);
+
+        // Observer
+        NotificacaoLogService logService = new NotificacaoLogService("logs/notificacoes.txt");
+
+        NotificacaoStrategy estrategiaDeNotificacao = new EmailNotificacaoStrategy(logService);
+
+        NotificacaoAnuncioObserver notificacaoObserver = new NotificacaoAnuncioObserver(estrategiaDeNotificacao);
 
         try {
-            infra.CargaDeDados loader = new CargaDeDados(userRepo, anuncioRepo);
+            CargaDeDados loader = new CargaDeDados(userRepo, anuncioRepo, notificacaoObserver);
             loader.carregarTudo();
             ui.mostrarMensagem("Dados carregados do CSV com sucesso!");
         } catch (Exception e) {
@@ -44,7 +55,7 @@ public class Main {
             try {
                 usuarioLogado = loginUC.execute(email, senha);
 
-                MenuController menu = getMenuController(anuncioRepo, ui, usuarioLogado);
+                MenuController menu = getMenuController(anuncioRepo, ui, usuarioLogado, notificacaoObserver);
 
                 menu.iniciar();
                 ui.limparTela();
@@ -56,10 +67,10 @@ public class Main {
         }
     }
 
-    private static MenuController getMenuController(AnuncioRepository anuncioRepo, ConsoleUI ui, Usuario usuarioLogado) {
+    private static MenuController getMenuController(AnuncioRepository anuncioRepo, ConsoleUI ui, Usuario usuarioLogado, NotificacaoAnuncioObserver notificacaoObserver) {
         // UseCases
-        ICriarAnuncioUseCase criarManualUseCase = new CriarAnuncioUseCase(anuncioRepo);
-        ICriarAnuncioPadraoUseCase criarPadraoUseCase = new CriarAnuncioPadraoUseCase(anuncioRepo);
+        ICriarAnuncioUseCase criarManualUseCase = new CriarAnuncioUseCase(anuncioRepo, notificacaoObserver);
+        ICriarAnuncioPadraoUseCase criarPadraoUseCase = new CriarAnuncioPadraoUseCase(anuncioRepo, notificacaoObserver);
         IListarMeusAnunciosUseCase listarMeusAnunciosUseCase = new ListarMeusAnunciosUseCase(anuncioRepo);
         IBuscarAnunciosUseCase buscarUseCase = new BuscarAnunciosUseCase(anuncioRepo);
         ISubmeterAnuncioUseCase submeterAnuncioUseCase = new SubmeterAnuncioUseCase();

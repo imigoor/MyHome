@@ -2,9 +2,9 @@ package service.anuncio.criar;
 
 import domain.anuncio.Anuncio;
 import domain.entities.Usuario;
-import domain.enums.StatusAnuncio;
 import domain.enums.TipoAnuncio;
 import domain.imovel.Imovel;
+import domain.interfaces.patterns.observer.AnuncioObserver;
 import patterns.factory.ApartamentoFactory;
 import patterns.factory.CasaFactory;
 import patterns.factory.ImovelFactory;
@@ -16,9 +16,13 @@ import java.util.Map;
 
 public class CriarAnuncioUseCase implements ICriarAnuncioUseCase{
     private AnuncioRepository anuncioRepository;
+    private final AnuncioObserver anuncioObserver;
 
-    public CriarAnuncioUseCase(AnuncioRepository anuncioRepository){
+    public CriarAnuncioUseCase(
+            AnuncioRepository anuncioRepository,
+            AnuncioObserver anuncioObserver) {
         this.anuncioRepository = anuncioRepository;
+        this.anuncioObserver = anuncioObserver;
     }
 
     @Override
@@ -33,6 +37,7 @@ public class CriarAnuncioUseCase implements ICriarAnuncioUseCase{
         Imovel imovel = imovelFactory.criarImovel(dadosImovel);
 
         Anuncio anuncio = new Anuncio(titulo, valor, tipoAnuncio, imovel, usuario);
+        anuncio.addObserver(anuncioObserver);
 
         anuncioRepository.salvar(anuncio);
 
