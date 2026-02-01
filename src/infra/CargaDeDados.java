@@ -6,6 +6,7 @@ import domain.entities.Interessado;
 import domain.entities.Proprietario;
 import domain.entities.Usuario;
 import domain.enums.TipoAnuncio;
+import domain.enums.TipoNotificacao;
 import domain.imovel.*;
 import domain.interfaces.patterns.observer.AnuncioObserver;
 import repository.anuncio.AnuncioRepository;
@@ -50,6 +51,7 @@ public class CargaDeDados {
                 String senha = dados[3].trim();
                 String cpf = dados[4].trim();
                 String registro = dados.length > 5 ? dados[5].trim() : "";
+                TipoNotificacao estrategiaNotificacao = TipoNotificacao.valueOf(dados[6].trim());
 
                 Usuario novoUsuario = null;
 
@@ -63,6 +65,7 @@ public class CargaDeDados {
                 }
 
                 if (novoUsuario != null) {
+                    novoUsuario.setPreferenciaNotificacao(estrategiaNotificacao);
                     usuarioRepository.salvar(novoUsuario);
                 }
             }

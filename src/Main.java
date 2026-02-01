@@ -1,5 +1,6 @@
 import controller.MenuController;
 import domain.entities.Usuario;
+import domain.enums.TipoNotificacao;
 import domain.interfaces.patterns.strategy.NotificacaoStrategy;
 import infra.CargaDeDados;
 import patterns.Observer.NotificacaoAnuncioObserver;
@@ -21,6 +22,9 @@ import service.login.IRealizarLoginUseCase;
 import service.login.RealizarLoginUseCase;
 import view.ConsoleUI;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 public class Main {
     public static void main(String[] args) {
         // instanciação das peças importantes
@@ -31,10 +35,15 @@ public class Main {
 
         // Observer
         NotificacaoLogService logService = new NotificacaoLogService("logs/notificacoes.txt");
+        Map<TipoNotificacao, NotificacaoStrategy> estrategias = new EnumMap<>(TipoNotificacao.class);
 
-        NotificacaoStrategy estrategiaDeNotificacao = new EmailNotificacaoStrategy(logService);
+        // Aqui iremos colocar todas as estratégias de notificação futuras
+        estrategias.put(
+                TipoNotificacao.EMAIL,
+                new EmailNotificacaoStrategy(logService)
+        );
 
-        NotificacaoAnuncioObserver notificacaoObserver = new NotificacaoAnuncioObserver(estrategiaDeNotificacao);
+        NotificacaoAnuncioObserver notificacaoObserver = new NotificacaoAnuncioObserver(estrategias);
 
         try {
             CargaDeDados loader = new CargaDeDados(userRepo, anuncioRepo, notificacaoObserver);

@@ -1,14 +1,19 @@
 package patterns.Observer;
 
 import domain.anuncio.Anuncio;
+import domain.enums.TipoNotificacao;
 import domain.interfaces.patterns.observer.AnuncioObserver;
 import domain.interfaces.patterns.strategy.NotificacaoStrategy;
 
-public class NotificacaoAnuncioObserver implements AnuncioObserver {
-    private final NotificacaoStrategy notificacaoStrategy;
+import java.util.Map;
 
-    public NotificacaoAnuncioObserver(NotificacaoStrategy notificacaoStrategy) {
-        this.notificacaoStrategy = notificacaoStrategy;
+public class NotificacaoAnuncioObserver implements AnuncioObserver {
+    private final Map<TipoNotificacao, NotificacaoStrategy> estrategias;
+
+    public NotificacaoAnuncioObserver(
+            Map<TipoNotificacao, NotificacaoStrategy> estrategias
+    ) {
+        this.estrategias = estrategias;
     }
 
     @Override
@@ -26,7 +31,17 @@ public class NotificacaoAnuncioObserver implements AnuncioObserver {
                 estadoAtual
         );
 
-        notificacaoStrategy.enviar(
+        TipoNotificacao preferencia = anuncio.getAnunciante().getPreferenciaNotificacao();
+
+        NotificacaoStrategy strategy = estrategias.get(preferencia);
+
+        if (strategy == null) {
+            throw new IllegalStateException(
+                    "Nenhuma estratégia configurada para " + preferencia
+            );
+        }
+
+        strategy.enviar(
                 anuncio.getAnunciante(),
                 titulo,
                 mensagem
