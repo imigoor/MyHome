@@ -26,6 +26,7 @@ A arquitetura do sistema foi desenhada para demonstrar o uso robusto de diversos
 ### Padrões de Criação
 - __Factory Method:__ Utilizado na criação dos diferentes tipos de imóveis (`Casa`, `Apartamento`, `Terreno`). Cada tipo possui sua própria fábrica (`CasaFactory`, etc.), permitindo a inclusão de novos tipos de imóveis sem alterar o código cliente de criação.
 - __Prototype:__ Implementado para permitir a criação rápida de anúncios baseados em "templates" (`AnuncioPrototypeRegistry`). O usuário pode clonar um imóvel padrão (ex: "Apartamento Padrão") e apenas ajustar o endereço, economizando tempo de preenchimento.
+- __Singleton:__ Aplicado na classe `Configuracao` para gerenciar as configurações globais do sistema. Ele garante que o arquivo externo `config.properties` seja lido apenas uma vez, fornecendo acesso centralizado a parâmetros vitais (como precos, limites de caracteres e lista de termos proibidos), eliminando "números mágicos" e garantindo consistência.
 
 ### Padrões Estruturais
 - __Decorator:__ Utilizado no sistema de busca. Os filtros (`FiltroCidade`, `FiltroPrecoMaximo`, `FiltroTipoImovel`) envolvem a busca base dinamicamente. Isso permite combinar filtros de qualquer maneira (ex: apenas cidade, ou cidade + preço) sem criar métodos rígidos de busca com múltiplos parâmetros.
@@ -33,7 +34,7 @@ A arquitetura do sistema foi desenhada para demonstrar o uso robusto de diversos
 ### Padrões Comportamentais
 - __Observer:__ Implementado para monitorar mudanças no estado dos anúncios. Quando um anúncio muda de status (ex: de "Moderação" para "Ativo"), o `NotificacaoAnuncioObserver` é disparado automaticamente para notificar o proprietário.
 - __State:__ Gerencia o ciclo de vida do anúncio. Cada estado (`Rascunho`, `Moderacao`, `Ativo`, `Vendido`, `Suspenso`) é uma classe que define quais transições são permitidas, eliminando condicionais complexos (`if/else`) e garantindo a integridade do fluxo.
-- __Chain of Responsibility:__ Aplicado no processo de submissão de anúncios. Uma cadeia de validadores (`ValidadorPreco` -> `ValidadorTexto` -> `ValidadorDescricao`) processa o anúncio sequencialmente. Se uma validação falhar, o processo para e o erro é retornado, desacoplando as regras de validação.
+- __Chain of Responsibility:__ Aplicado no processo de submissão de anúncios. Uma cadeia de validadores (`ValidadorPreco` -> `ValidadorTexto` -> `ValidadorTamanho`) processa o anúncio sequencialmente. Se uma validação falhar, o processo para e o erro é retornado, desacoplando as regras de validação.
 - __Strategy:__ Define como as notificações são enviadas. O sistema define uma interface comum e implementações concretas (como `EmailNotificacaoStrategy`), permitindo trocar o canal de notificação (Email, SMS, WhatsApp) dinamicamente conforme a preferência do usuário.
 
 ## Estrutura de Arquivos
@@ -61,7 +62,10 @@ O projeto foi desenvolvido em Java 17. Para executá-lo localmente:
 
 2. Abra o projeto em sua IDE de preferência (IntelliJ IDEA, Eclipse ou VS Code).
 
-3. Certifique-se de que os arquivos de dados `usuarios.csv` e `anuncios.csv` estão na raiz do diretório do projeto (ou no local configurado em `CargaDeDados.java`).
+3. **Requisito Obrigatório:** Certifique-se de que os seguintes arquivos estejam na **raiz** do diretório do projeto (fora da pasta `src`):
+   - `usuarios.csv` (Base de dados de usuários)
+   - `anuncios.csv` (Base de dados de anúncios)
+   - `config.properties` (Arquivo de configuração do Singleton)
 
 4. Execute a classe principal:
     `src/Main.java`

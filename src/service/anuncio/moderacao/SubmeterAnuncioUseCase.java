@@ -2,10 +2,10 @@ package service.anuncio.moderacao;
 
 import domain.anuncio.Anuncio;
 import domain.exceptions.ModeracaoException;
-import domain.interfaces.patterns.chain.ModeracaoHandler;
-import domain.interfaces.patterns.chain.ValidadorDescricao;
-import domain.interfaces.patterns.chain.ValidadorPreco;
-import domain.interfaces.patterns.chain.ValidadorTexto;
+import domain.interfaces.patterns.chain.IModeracaoHandler;
+import patterns.chain.ValidadorTamanho;
+import patterns.chain.ValidadorPreco;
+import patterns.chain.ValidadorTexto;
 
 public class SubmeterAnuncioUseCase implements ISubmeterAnuncioUseCase {
 
@@ -14,17 +14,15 @@ public class SubmeterAnuncioUseCase implements ISubmeterAnuncioUseCase {
     }
 
     @Override
-    public String execute(Anuncio anuncio) {
-        System.out.println("\n--- Iniciando Processo de Moderação ---");
-
+    public String execute(Anuncio anuncio) {        
         // 1. Instanciar os Validadores (Handlers)
-        ModeracaoHandler validadorPreco = new ValidadorPreco();
-        ModeracaoHandler validadorTexto = new ValidadorTexto();
-        ModeracaoHandler validadorDescricao = new ValidadorDescricao();
+        IModeracaoHandler validadorPreco = new ValidadorPreco();
+        IModeracaoHandler validadorTexto = new ValidadorTexto();
+        IModeracaoHandler validadorTamanho = new ValidadorTamanho();
 
-        // 2. Montar a Corrente (Chain): Preco -> Texto -> Descricao
+        // 2. Montar a Corrente (Chain): Preco -> Texto -> tamanho
         validadorPreco.setNext(validadorTexto);
-        validadorTexto.setNext(validadorDescricao);
+        validadorTexto.setNext(validadorTamanho);
 
         try {
             // Muda status para "Em análise"
