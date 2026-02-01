@@ -43,7 +43,7 @@ public class MenuController {
         this.submeterAnuncioUseCase = submeterAnuncioUseCase;
     }
 
-    // loop principal (estava no Main, agora está aqui, organizado)
+    // loop principal
     public void iniciar() {
         boolean rodando = true;
         while (rodando) {
@@ -85,7 +85,7 @@ public class MenuController {
                         else
                             ui.mostrarErro("Opção inválida ou sem permissão.");
                         break;
-                    case "4": // <--- CHAMADA DO NOVO FLUXO
+                    case "4":
                         if (usuarioLogado.podeAnunciar()) fluxoSubmeterAnuncio();
                         else ui.mostrarErro("Sem permissão.");
                         break;

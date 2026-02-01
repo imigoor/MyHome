@@ -71,7 +71,6 @@ public class NotificacaoLogService {
             case "email" -> usuario.getEmail();
             case "whatsapp" -> usuario.getTelefone();
             case "sms" -> usuario.getTelefone();
-//            case "telegram" -> usuario.getTelegramId();
             default -> "N/A";
         };
     }
