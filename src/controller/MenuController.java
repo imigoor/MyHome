@@ -4,7 +4,11 @@ import domain.anuncio.Anuncio;
 import domain.entities.Usuario;
 import domain.enums.TipoAnuncio;
 import domain.imovel.Endereco;
+import patterns.template.ProcessoVenda;
+import patterns.template.VendaAvista;
+import patterns.template.VendaFinanciada;
 import service.anuncio.buscar.IBuscarAnunciosUseCase;
+import service.anuncio.comercial.IRealizarVendaUseCase;
 import service.anuncio.criar.ICriarAnuncioPadraoUseCase;
 import service.anuncio.criar.ICriarAnuncioUseCase;
 import service.anuncio.listar.IListarMeusAnunciosUseCase;
@@ -26,6 +30,7 @@ public class MenuController {
     private IListarMeusAnunciosUseCase listarMeusAnunciosUseCase;
     private IBuscarAnunciosUseCase buscarAnunciosUseCase;
     private ISubmeterAnuncioUseCase submeterAnuncioUseCase;
+    private IRealizarVendaUseCase realizarVendaUseCase;
 
     public MenuController(ConsoleUI ui,
                           Usuario usuarioLogado,
@@ -33,7 +38,8 @@ public class MenuController {
                           ICriarAnuncioPadraoUseCase criarAnuncioPadraoUseCase,
                           IListarMeusAnunciosUseCase listarMeusAnunciosUseCase,
                           IBuscarAnunciosUseCase buscarAnunciosUseCase,
-                          ISubmeterAnuncioUseCase submeterAnuncioUseCase) {
+                          ISubmeterAnuncioUseCase submeterAnuncioUseCase,
+                          IRealizarVendaUseCase realizarVendaUseCase) {
         this.ui = ui;
         this.usuarioLogado = usuarioLogado;
         this.criarAnuncioUseCase = criarAnuncioUseCase;
@@ -41,6 +47,7 @@ public class MenuController {
         this.listarMeusAnunciosUseCase = listarMeusAnunciosUseCase;
         this.buscarAnunciosUseCase = buscarAnunciosUseCase;
         this.submeterAnuncioUseCase = submeterAnuncioUseCase;
+        this.realizarVendaUseCase = realizarVendaUseCase;
     }
 
     // loop principal
@@ -61,6 +68,9 @@ public class MenuController {
                 ui.mostrarMensagem("2 - Criar Anúncio (RF01/RF02)");
                 ui.mostrarMensagem("3 - Meus Anúncios");
                 ui.mostrarMensagem("4 - Publicar/Submeter Anúncio (RF03 - Chain)");
+            } else {
+                // SE FOR INTERESSADO (Cliente) VÊ ISSO:
+                ui.mostrarMensagem("5 - Comprar Imóvel (RF08 - Template Method)");
             }
 
             ui.mostrarMensagem("0. Sair");
@@ -89,6 +99,12 @@ public class MenuController {
                         if (usuarioLogado.podeAnunciar()) fluxoSubmeterAnuncio();
                         else ui.mostrarErro("Sem permissão.");
                         break;
+                    case "5": 
+                        if (!usuarioLogado.podeAnunciar()) {
+                            fluxoRealizarVenda();
+                        } else {
+                            ui.mostrarMensagem("Opção exclusiva para compradores (Interessados).");
+                        }
                     case "0":
                         rodando = false;
                         break;
@@ -99,6 +115,63 @@ public class MenuController {
                 ui.mostrarErro(e.getMessage());
             }
         }
+    }
+
+    private void fluxoRealizarVenda() {
+        ui.mostrarMensagem("\n=== SIMULAR COMPRA DE IMÓVEL (Template Method) ===");
+
+        // 1. Busca todos os anúncios para listar (passando filtro vazio)
+        Map<String, Object> filtroVazio = new HashMap<>();
+        List<Anuncio> todosAnuncios = buscarAnunciosUseCase.execute(filtroVazio);
+
+        // Filtra apenas os que estão ATIVOS (Prontos para venda)
+        List<Anuncio> anunciosAtivos = todosAnuncios.stream()
+                .filter(a -> a.getEstadoAtual().equalsIgnoreCase("Ativo"))
+                .toList();
+
+        if (anunciosAtivos.isEmpty()) {
+            ui.mostrarErro("Não há imóveis Ativos disponíveis para compra no momento.");
+            return;
+        }
+
+        // 2. Lista para o usuário escolher
+        for (int i = 0; i < anunciosAtivos.size(); i++) {
+            Anuncio a = anunciosAtivos.get(i);
+            System.out.println("[" + i + "] " + a.getTitulo() + " | R$ " + a.getValor() + " | " + a.getImovel().getEndereco().getCidade());
+        }
+
+        // 3. Seleção do Imóvel
+        int index = ui.lerInteiro("\nSelecione o número do imóvel para comprar");
+        if (index < 0 || index >= anunciosAtivos.size()) {
+            ui.mostrarErro("Opção inválida.");
+            return;
+        }
+        Anuncio anuncioSelecionado = anunciosAtivos.get(index);
+
+        // 4. Seleção da Forma de Pagamento (Aqui definimos qual classe filha usar)
+        ui.mostrarMensagem("\n--- Escolha a Forma de Pagamento ---");
+        ui.mostrarMensagem("1 - À Vista (10% de Desconto)");
+        ui.mostrarMensagem("2 - Financiamento (20% de Juros)");
+        
+        int pagto = ui.lerInteiro("Opção");
+        ProcessoVenda processoVenda = null;
+
+        if (pagto == 1) {
+            processoVenda = new VendaAvista();
+        } else if (pagto == 2) {
+            processoVenda = new VendaFinanciada();
+        } else {
+            ui.mostrarErro("Forma de pagamento inválida.");
+            return;
+        }
+
+        // 5. Executa o UseCase usando o Template Method escolhido
+        ui.mostrarMensagem("\nProcessando pagamento...");
+        String recibo = realizarVendaUseCase.vender(anuncioSelecionado, processoVenda);
+        
+        // 6. Mostra o resultado final
+        ui.mostrarMensagem(recibo);
+        ui.lerTexto("Pressione ENTER para continuar...");
     }
 
     private void fluxoBuscar() {

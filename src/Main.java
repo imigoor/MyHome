@@ -9,6 +9,8 @@ import repository.anuncio.AnuncioRepository;
 import repository.usuario.UsuarioRepository;
 import service.anuncio.buscar.BuscarAnunciosUseCase;
 import service.anuncio.buscar.IBuscarAnunciosUseCase;
+import service.anuncio.comercial.IRealizarVendaUseCase;
+import service.anuncio.comercial.RealizarVendaUseCase;
 import service.anuncio.criar.CriarAnuncioPadraoUseCase;
 import service.anuncio.criar.CriarAnuncioUseCase;
 import service.anuncio.criar.ICriarAnuncioPadraoUseCase;
@@ -83,7 +85,8 @@ public class Main {
         IListarMeusAnunciosUseCase listarMeusAnunciosUseCase = new ListarMeusAnunciosUseCase(anuncioRepo);
         IBuscarAnunciosUseCase buscarUseCase = new BuscarAnunciosUseCase(anuncioRepo);
         ISubmeterAnuncioUseCase submeterAnuncioUseCase = new SubmeterAnuncioUseCase();
+        IRealizarVendaUseCase realizarVendaUseCase = new RealizarVendaUseCase();
 
-        return new MenuController(ui, usuarioLogado, criarManualUseCase, criarPadraoUseCase, listarMeusAnunciosUseCase, buscarUseCase, submeterAnuncioUseCase);
+        return new MenuController(ui, usuarioLogado, criarManualUseCase, criarPadraoUseCase, listarMeusAnunciosUseCase, buscarUseCase, submeterAnuncioUseCase, realizarVendaUseCase);
     }
 }
