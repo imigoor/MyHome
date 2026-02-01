@@ -25,6 +25,8 @@ public class AnuncioRepository {
     }
 
     public List<Anuncio> listarTodos() {
-        return db.getTabelaAnuncios();
+        return db.getTabelaAnuncios().stream()
+                .filter(a -> "ATIVO".equalsIgnoreCase(a.getEstadoAtual()))
+                .collect(Collectors.toList());
     }
 }

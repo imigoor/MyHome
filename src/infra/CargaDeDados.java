@@ -5,9 +5,10 @@ import domain.entities.Corretor;
 import domain.entities.Interessado;
 import domain.entities.Proprietario;
 import domain.entities.Usuario;
-import domain.enums.StatusAnuncio;
 import domain.enums.TipoAnuncio;
+import domain.enums.TipoNotificacao;
 import domain.imovel.*;
+import domain.interfaces.patterns.observer.AnuncioObserver;
 import repository.anuncio.AnuncioRepository;
 import repository.usuario.UsuarioRepository;
 
@@ -19,10 +20,16 @@ import java.math.BigDecimal;
 public class CargaDeDados {
     private final UsuarioRepository usuarioRepository;
     private final AnuncioRepository anuncioRepository;
+    private final AnuncioObserver anuncioObserver;
 
-    public CargaDeDados(UsuarioRepository usuarioRepository, AnuncioRepository anuncioRepository) {
+    public CargaDeDados(
+            UsuarioRepository usuarioRepository,
+            AnuncioRepository anuncioRepository,
+            AnuncioObserver anuncioObserver
+    ) {
         this.usuarioRepository = usuarioRepository;
         this.anuncioRepository = anuncioRepository;
+        this.anuncioObserver = anuncioObserver;
     }
 
     public void carregarTudo() {
@@ -44,6 +51,7 @@ public class CargaDeDados {
                 String senha = dados[3].trim();
                 String cpf = dados[4].trim();
                 String registro = dados.length > 5 ? dados[5].trim() : "";
+                TipoNotificacao estrategiaNotificacao = TipoNotificacao.valueOf(dados[6].trim());
 
                 Usuario novoUsuario = null;
 
@@ -57,6 +65,7 @@ public class CargaDeDados {
                 }
 
                 if (novoUsuario != null) {
+                    novoUsuario.setPreferenciaNotificacao(estrategiaNotificacao);
                     usuarioRepository.salvar(novoUsuario);
                 }
             }
@@ -92,9 +101,7 @@ public class CargaDeDados {
                 Imovel imovel = criarImovelDoCSV(tipoImovel, endereco, descricao);
 
                 Anuncio anuncio = new Anuncio(titulo, valor, tipoAnuncio, imovel, dono);
-
-                // Força o status para ATIVO para aparecer nas buscas de teste
-                anuncio.setStatus(StatusAnuncio.RASCUNHO);
+                anuncio.addObserver(anuncioObserver);
 
                 anuncioRepository.salvar(anuncio);
             }

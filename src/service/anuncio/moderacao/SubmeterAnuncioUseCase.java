@@ -1,23 +1,22 @@
 package service.anuncio.moderacao;
 
 import domain.anuncio.Anuncio;
-import domain.enums.StatusAnuncio;
 import domain.exceptions.ModeracaoException;
 import domain.interfaces.patterns.chain.ModeracaoHandler;
 import domain.interfaces.patterns.chain.ValidadorDescricao;
 import domain.interfaces.patterns.chain.ValidadorPreco;
 import domain.interfaces.patterns.chain.ValidadorTexto;
 
-public class SubmeterAnuncioUseCase implements ISubmeterAnuncioUseCase {    
+public class SubmeterAnuncioUseCase implements ISubmeterAnuncioUseCase {
 
     public SubmeterAnuncioUseCase() {
-        
+
     }
 
     @Override
     public String execute(Anuncio anuncio) {
         System.out.println("\n--- Iniciando Processo de Moderação ---");
-        
+
         // 1. Instanciar os Validadores (Handlers)
         ModeracaoHandler validadorPreco = new ValidadorPreco();
         ModeracaoHandler validadorTexto = new ValidadorTexto();
@@ -29,19 +28,19 @@ public class SubmeterAnuncioUseCase implements ISubmeterAnuncioUseCase {
 
         try {
             // Muda status para "Em análise"
-            anuncio.setStatus(StatusAnuncio.EM_MODERACAO);
+            anuncio.submeterAModeracao();
 
             // 3. Inicia a validação pelo PRIMEIRO da fila
             validadorPreco.handle(anuncio);
 
             // Se chegou aqui, não houve erro
-            anuncio.setStatus(StatusAnuncio.ATIVO);
-            return "SUCESSO: Anuncio Aprovado e Publicado! \nStatus Final do Anúncio: " + anuncio.getStatus();
+            anuncio.aprovarModeracao();
+            return "SUCESSO: Anuncio Aprovado e Publicado! \nStatus Final do Anúncio: " + anuncio.getEstadoAtual();
 
         } catch (ModeracaoException e) {
             // Se algum handler reclamou
-            anuncio.setStatus(StatusAnuncio.SUSPENSO);
+            anuncio.reprovarModeracao();
             return "FALHA NA MODERAÇÃO: " + e.getMessage();
-        }                
+        }
     }
 }

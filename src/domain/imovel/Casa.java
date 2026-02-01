@@ -28,7 +28,7 @@ public class Casa extends Imovel {
 
     @Override
     public Imovel clone() {
-        return new Casa(this); // A mágica acontece aqui!
+        return new Casa(this);
     }
 
     public boolean isPossuiQuintal() { return possuiQuintal; }
