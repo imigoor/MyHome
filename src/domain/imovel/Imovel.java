@@ -21,8 +21,6 @@ public abstract class Imovel implements Prototype<Imovel> {
         this.numeroQuartos = numeroQuartos;
         this.numeroBanheiros = numeroBanheiros;
         this.descricao = descricao;
-        // this.tipoImovel = tipoImovel; // verificar com professor se continuamos com ENUM para TipoImovel
-        // ou a ideia de metodo gancho (afim de evitar mexer em codigo existente quando for criar um novo tipo de imovell)
     }
 
     public Imovel(Imovel imovelTarget) {
@@ -32,9 +30,6 @@ public abstract class Imovel implements Prototype<Imovel> {
             this.numeroQuartos = imovelTarget.numeroQuartos;
             this.numeroBanheiros = imovelTarget.numeroBanheiros;
             this.descricao = imovelTarget.descricao;
-
-            // Cuidado: Endereco é objeto, precisamos clonar também se não for null
-            // (Assumindo que Endereco é simples ou imutável por enquanto)
             this.endereco = imovelTarget.endereco;
         }
     }

@@ -1,6 +1,10 @@
 import controller.MenuController;
 import domain.entities.Usuario;
+import domain.enums.TipoNotificacao;
+import domain.interfaces.patterns.strategy.NotificacaoStrategy;
 import infra.CargaDeDados;
+import patterns.Observer.NotificacaoAnuncioObserver;
+import patterns.strategy.EmailNotificacaoStrategy;
 import repository.anuncio.AnuncioRepository;
 import repository.usuario.UsuarioRepository;
 import service.anuncio.buscar.BuscarAnunciosUseCase;
@@ -13,9 +17,13 @@ import service.anuncio.listar.IListarMeusAnunciosUseCase;
 import service.anuncio.listar.ListarMeusAnunciosUseCase;
 import service.anuncio.moderacao.ISubmeterAnuncioUseCase;
 import service.anuncio.moderacao.SubmeterAnuncioUseCase;
+import service.anuncio.notificar.NotificacaoLogService;
 import service.login.IRealizarLoginUseCase;
 import service.login.RealizarLoginUseCase;
 import view.ConsoleUI;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
@@ -23,10 +31,22 @@ public class Main {
         ConsoleUI ui = new ConsoleUI();
         UsuarioRepository userRepo = new UsuarioRepository();
         AnuncioRepository anuncioRepo = new AnuncioRepository();
-        IRealizarLoginUseCase loginUC = new RealizarLoginUseCase(userRepo);        
+        IRealizarLoginUseCase loginUC = new RealizarLoginUseCase(userRepo);
+
+        // Observer
+        NotificacaoLogService logService = new NotificacaoLogService("logs/notificacoes.txt");
+        Map<TipoNotificacao, NotificacaoStrategy> estrategias = new EnumMap<>(TipoNotificacao.class);
+
+        // Aqui iremos colocar todas as estratégias de notificação futuras
+        estrategias.put(
+                TipoNotificacao.EMAIL,
+                new EmailNotificacaoStrategy(logService)
+        );
+
+        NotificacaoAnuncioObserver notificacaoObserver = new NotificacaoAnuncioObserver(estrategias);
 
         try {
-            infra.CargaDeDados loader = new CargaDeDados(userRepo, anuncioRepo);
+            CargaDeDados loader = new CargaDeDados(userRepo, anuncioRepo, notificacaoObserver);
             loader.carregarTudo();
             ui.mostrarMensagem("Dados carregados do CSV com sucesso!");
         } catch (Exception e) {
@@ -43,19 +63,27 @@ public class Main {
 
             try {
                 usuarioLogado = loginUC.execute(email, senha);
+
+                MenuController menu = getMenuController(anuncioRepo, ui, usuarioLogado, notificacaoObserver);
+
+                menu.iniciar();
+                ui.limparTela();
+
+                usuarioLogado = null;
             } catch (Exception e) {
                 ui.mostrarErro(e.getMessage());
             }
         }
+    }
 
+    private static MenuController getMenuController(AnuncioRepository anuncioRepo, ConsoleUI ui, Usuario usuarioLogado, NotificacaoAnuncioObserver notificacaoObserver) {
         // UseCases
-        ICriarAnuncioUseCase criarManualUseCase = new CriarAnuncioUseCase(anuncioRepo);
-        ICriarAnuncioPadraoUseCase criarPadraoUseCase = new CriarAnuncioPadraoUseCase(anuncioRepo);
+        ICriarAnuncioUseCase criarManualUseCase = new CriarAnuncioUseCase(anuncioRepo, notificacaoObserver);
+        ICriarAnuncioPadraoUseCase criarPadraoUseCase = new CriarAnuncioPadraoUseCase(anuncioRepo, notificacaoObserver);
         IListarMeusAnunciosUseCase listarMeusAnunciosUseCase = new ListarMeusAnunciosUseCase(anuncioRepo);
         IBuscarAnunciosUseCase buscarUseCase = new BuscarAnunciosUseCase(anuncioRepo);
-        ISubmeterAnuncioUseCase submeterAnuncioUseCase = new SubmeterAnuncioUseCase();        
+        ISubmeterAnuncioUseCase submeterAnuncioUseCase = new SubmeterAnuncioUseCase();
 
-        MenuController menu = new MenuController(ui, usuarioLogado, criarManualUseCase, criarPadraoUseCase, listarMeusAnunciosUseCase, buscarUseCase, submeterAnuncioUseCase);
-        menu.iniciar();
+        return new MenuController(ui, usuarioLogado, criarManualUseCase, criarPadraoUseCase, listarMeusAnunciosUseCase, buscarUseCase, submeterAnuncioUseCase);
     }
 }
