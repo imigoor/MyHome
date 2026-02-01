@@ -36,6 +36,7 @@ A arquitetura do sistema foi desenhada para demonstrar o uso robusto de diversos
 - __State:__ Gerencia o ciclo de vida do anúncio. Cada estado (`Rascunho`, `Moderacao`, `Ativo`, `Vendido`, `Suspenso`) é uma classe que define quais transições são permitidas, eliminando condicionais complexos (`if/else`) e garantindo a integridade do fluxo.
 - __Chain of Responsibility:__ Aplicado no processo de submissão de anúncios. Uma cadeia de validadores (`ValidadorPreco` -> `ValidadorTexto` -> `ValidadorTamanho`) processa o anúncio sequencialmente. Se uma validação falhar, o processo para e o erro é retornado, desacoplando as regras de validação.
 - __Strategy:__ Define como as notificações são enviadas. O sistema define uma interface comum e implementações concretas (como `EmailNotificacaoStrategy`), permitindo trocar o canal de notificação (Email, SMS, WhatsApp) dinamicamente conforme a preferência do usuário.
+- __Template Method:__ Aplicado no processo de venda de imóveis (`ProcessoVenda`). Uma classe abstrata define o esqueleto do algoritmo de venda (validação -> cálculo -> pagamento -> finalização), delegando para as subclasses (`VendaAvista`, `VendaFinanciada`) a implementação dos passos específicos de cálculo (descontos ou juros), garantindo que o fluxo transacional seja respeitado.
 
 ## Estrutura de Arquivos
 
