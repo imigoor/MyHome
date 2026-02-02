@@ -100,11 +100,9 @@ public class MenuController {
                         else ui.mostrarErro("Sem permissão.");
                         break;
                     case "5": 
-                        if (!usuarioLogado.podeAnunciar()) {
-                            fluxoRealizarVenda();
-                        } else {
-                            ui.mostrarMensagem("Opção exclusiva para compradores (Interessados).");
-                        }
+                        if (!usuarioLogado.podeAnunciar()) fluxoRealizarVenda();
+                        else ui.mostrarMensagem("Opção exclusiva para compradores (Interessados).");
+                        break;
                     case "0":
                         rodando = false;
                         break;
@@ -137,7 +135,12 @@ public class MenuController {
         // 2. Lista para o usuário escolher
         for (int i = 0; i < anunciosAtivos.size(); i++) {
             Anuncio a = anunciosAtivos.get(i);
-            System.out.println("[" + i + "] " + a.getTitulo() + " | R$ " + a.getValor() + " | " + a.getImovel().getEndereco().getCidade());
+            ui.mostrarMensagem(String.format("[%d] %s | R$ %.2f | %s",
+                    i,
+                    a.getTitulo(),
+                    a.getValor(),
+                    a.getImovel().getEndereco().getCidade()
+            ));
         }
 
         // 3. Seleção do Imóvel
@@ -239,7 +242,12 @@ public class MenuController {
         // 2. Mostra com índice para facilitar a escolha
         for (int i = 0; i < meusAnuncios.size(); i++) {
             Anuncio a = meusAnuncios.get(i);
-            System.out.println("[" + i + "] " + a.getTitulo() + " | Valor: " + a.getValor() + " | Status: " + a.getEstadoAtual());
+            ui.mostrarMensagem(String.format("[%d] %s | Valor: %.2f | Status: %s",
+                    i,
+                    a.getTitulo(),
+                    a.getValor(),
+                    a.getEstadoAtual()
+            ));
         }
 
         // 3. Usuário escolhe
