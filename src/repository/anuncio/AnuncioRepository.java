@@ -4,6 +4,8 @@ import domain.anuncio.Anuncio;
 import repository.BancoDeDados;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class AnuncioRepository {
     private BancoDeDados db = BancoDeDados.getInstance();
@@ -16,7 +18,15 @@ public class AnuncioRepository {
         db.getTabelaAnuncios().remove(anuncio);
     }
 
+    public List<Anuncio> buscarPorAnunciante(UUID idAnunciante) {
+        return db.getTabelaAnuncios().stream()
+                .filter(a -> a.getAnunciante().getId().equals(idAnunciante))
+                .collect(Collectors.toList());
+    }
+
     public List<Anuncio> listarTodos() {
-        return db.getTabelaAnuncios();
+        return db.getTabelaAnuncios().stream()
+                .filter(a -> "ATIVO".equalsIgnoreCase(a.getEstadoAtual()))
+                .collect(Collectors.toList());
     }
 }

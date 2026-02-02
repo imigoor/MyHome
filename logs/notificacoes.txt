@@ -1,0 +1,112 @@
+--------------------------------------------------
+[EMAIL SERVER - 01/02/2026 09:36:04]
+PARA: Pedro Dono (pedro@gmail.com)
+TÍTULO: Atualização no seu anúncio
+CONTEÚDO: O anúncio 'casa assalto teste' mudou de RASCUNHO para MODERAÇÃO.
+--------------------------------------------------
+
+--------------------------------------------------
+[EMAIL SERVER - 01/02/2026 09:36:04]
+PARA: Pedro Dono (pedro@gmail.com)
+TÍTULO: Atualização no seu anúncio
+CONTEÚDO: O anúncio 'casa assalto teste' mudou de MODERAÇÃO para ATIVO.
+--------------------------------------------------
+
+--------------------------------------------------
+[EMAIL SERVER - 01/02/2026 09:39:17]
+PARA: Pedro Dono (pedro@gmail.com)
+TÍTULO: Atualização no seu anúncio
+CONTEÚDO: O anúncio 'casa contra assalto' mudou de RASCUNHO para MODERAÇÃO.
+--------------------------------------------------
+
+--------------------------------------------------
+[EMAIL SERVER - 01/02/2026 09:39:17]
+PARA: Pedro Dono (pedro@gmail.com)
+TÍTULO: Atualização no seu anúncio
+CONTEÚDO: O anúncio 'casa contra assalto' mudou de MODERAÇÃO para SUSPENSO.
+--------------------------------------------------
+
+--------------------------------------------------
+[EMAIL SERVER - 01/02/2026 10:03:26]
+PARA: Pedro Dono (pedro@gmail.com)
+TÍTULO: Atualização no seu anúncio
+CONTEÚDO: O anúncio 'i' mudou de RASCUNHO para MODERAÇÃO.
+--------------------------------------------------
+
+--------------------------------------------------
+[EMAIL SERVER - 01/02/2026 10:03:26]
+PARA: Pedro Dono (pedro@gmail.com)
+TÍTULO: Atualização no seu anúncio
+CONTEÚDO: O anúncio 'i' mudou de MODERAÇÃO para ATIVO.
+--------------------------------------------------
+
+--------------------------------------------------
+[EMAIL SERVER - 01/02/2026 10:18:02]
+PARA: Pedro Dono (pedro@gmail.com)
+TÍTULO: Atualização no seu anúncio
+CONTEÚDO: O anúncio 'i' mudou de RASCUNHO para MODERAÇÃO.
+--------------------------------------------------
+
+--------------------------------------------------
+[EMAIL SERVER - 01/02/2026 10:18:02]
+PARA: Pedro Dono (pedro@gmail.com)
+TÍTULO: Atualização no seu anúncio
+CONTEÚDO: O anúncio 'i' mudou de MODERAÇÃO para SUSPENSO.
+--------------------------------------------------
+
+--------------------------------------------------
+[EMAIL SERVER - 01/02/2026 11:04:51]
+PARA: Pedro Dono (pedro@gmail.com)
+TÍTULO: Atualização no seu anúncio
+CONTEÚDO: O anúncio 'i' mudou de RASCUNHO para MODERAÇÃO.
+--------------------------------------------------
+
+--------------------------------------------------
+[EMAIL SERVER - 01/02/2026 11:04:51]
+PARA: Pedro Dono (pedro@gmail.com)
+TÍTULO: Atualização no seu anúncio
+CONTEÚDO: O anúncio 'i' mudou de MODERAÇÃO para SUSPENSO.
+--------------------------------------------------
+
+--------------------------------------------------
+[EMAIL SERVER - 01/02/2026 11:05:41]
+PARA: Pedro Dono (pedro@gmail.com)
+TÍTULO: Atualização no seu anúncio
+CONTEÚDO: O anúncio 'venda' mudou de RASCUNHO para MODERAÇÃO.
+--------------------------------------------------
+
+--------------------------------------------------
+[EMAIL SERVER - 01/02/2026 11:05:41]
+PARA: Pedro Dono (pedro@gmail.com)
+TÍTULO: Atualização no seu anúncio
+CONTEÚDO: O anúncio 'venda' mudou de MODERAÇÃO para SUSPENSO.
+--------------------------------------------------
+
+--------------------------------------------------
+[EMAIL SERVER - 01/02/2026 11:06:19]
+PARA: Pedro Dono (pedro@gmail.com)
+TÍTULO: Atualização no seu anúncio
+CONTEÚDO: O anúncio 'venda contra golpes' mudou de RASCUNHO para MODERAÇÃO.
+--------------------------------------------------
+
+--------------------------------------------------
+[EMAIL SERVER - 01/02/2026 11:06:19]
+PARA: Pedro Dono (pedro@gmail.com)
+TÍTULO: Atualização no seu anúncio
+CONTEÚDO: O anúncio 'venda contra golpes' mudou de MODERAÇÃO para SUSPENSO.
+--------------------------------------------------
+
+--------------------------------------------------
+[EMAIL SERVER - 01/02/2026 11:07:04]
+PARA: Pedro Dono (pedro@gmail.com)
+TÍTULO: Atualização no seu anúncio
+CONTEÚDO: O anúncio 'venda' mudou de RASCUNHO para MODERAÇÃO.
+--------------------------------------------------
+
+--------------------------------------------------
+[EMAIL SERVER - 01/02/2026 11:07:04]
+PARA: Pedro Dono (pedro@gmail.com)
+TÍTULO: Atualização no seu anúncio
+CONTEÚDO: O anúncio 'venda' mudou de MODERAÇÃO para SUSPENSO.
+--------------------------------------------------
+

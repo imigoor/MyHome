@@ -10,7 +10,6 @@ public class ApartamentoFactory extends ImovelFactory {
     @Override
     public Imovel criarImovel(Map<String, Object> dados) {
         return new Apartamento(
-                null, // ID (gerado depois)
                 (Endereco) dados.get("endereco"),
                 (Double) dados.get("area"),
                 (Integer) dados.get("quartos"),

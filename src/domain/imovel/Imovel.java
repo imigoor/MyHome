@@ -1,10 +1,11 @@
 package domain.imovel;
 
-import domain.enums.TipoImovel;
+import java.util.UUID;
+
 import domain.interfaces.patterns.prototype.Prototype;
 
 public abstract class Imovel implements Prototype<Imovel> {
-    private Long id;
+    private UUID id;
     private Endereco endereco;
     private Double areaMetrosQuadrados;
     private Integer numeroQuartos;
@@ -13,29 +14,22 @@ public abstract class Imovel implements Prototype<Imovel> {
 
     public Imovel() {}
 
-    public Imovel(Long id, Endereco endereco, Double areaMetrosQuadrados, Integer numeroQuartos, Integer numeroBanheiros, String descricao) {
-        this.id = id; // criei esse atributo pensando que seria gerado via banco, mas como iremos simular banco verificar se fazz sentido esse atributo
+    public Imovel(Endereco endereco, Double areaMetrosQuadrados, Integer numeroQuartos, Integer numeroBanheiros, String descricao) {
+        this.id = UUID.randomUUID();
         this.endereco = endereco;
         this.areaMetrosQuadrados = areaMetrosQuadrados;
         this.numeroQuartos = numeroQuartos;
         this.numeroBanheiros = numeroBanheiros;
         this.descricao = descricao;
-        // this.tipoImovel = tipoImovel; // verificar com professor se continuamos com ENUM para TipoImovel
-        // ou a ideia de metodo gancho (afim de evitar mexer em codigo existente quando for criar um novo tipo de imovell)
     }
 
     public Imovel(Imovel imovelTarget) {
         if (imovelTarget != null) {
-            // regra: clone nasce sem ID (será gerado ao salvar)
-            this.id = null;
-
+            this.id = UUID.randomUUID();
             this.areaMetrosQuadrados = imovelTarget.areaMetrosQuadrados;
             this.numeroQuartos = imovelTarget.numeroQuartos;
             this.numeroBanheiros = imovelTarget.numeroBanheiros;
             this.descricao = imovelTarget.descricao;
-
-            // Cuidado: Endereco é objeto, precisamos clonar também se não for null
-            // (Assumindo que Endereco é simples ou imutável por enquanto)
             this.endereco = imovelTarget.endereco;
         }
     }
@@ -45,8 +39,8 @@ public abstract class Imovel implements Prototype<Imovel> {
 
     public abstract String getTipoImovel();
 
-    public Long getId() { return id; }
-    public void setId(Long id) {this.id = id;}
+    public UUID getId() { return id; }
+    public void setId(UUID id) {this.id = id;}
 
     public Endereco getEndereco() { return endereco; }
     public void setEndereco(Endereco endereco) { this.endereco = endereco; }

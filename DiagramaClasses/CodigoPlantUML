@@ -1,0 +1,257 @@
+@startuml
+
+!theme plain
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 0.6
+skinparam ranksep 0.6
+
+' ==========================
+' CAMADA DE APRESENTAÇÃO
+' ==========================
+package "Presentation Layer" {
+    class Main {
+        +main(args: String[])
+    }
+
+    class ConsoleUI {
+        +mostrarMensagem(msg: String)
+        +lerTexto(prompt: String): String
+        +lerDecimal(prompt: String): Double
+        +lerInteiro(prompt: String): Integer
+        +lerBooleano(prompt: String): Boolean
+        +coletarDadosImovel(tipo: String): Map
+    }
+
+    class MenuController {
+        -usuarioLogado: Usuario
+        +iniciar()
+        -fluxoBuscar()
+        -fluxoCriarAnuncioManual()
+        -fluxoRealizarVenda()
+    }
+}
+
+' ==========================
+' CAMADA DE SERVIÇO (USE CASES)
+' ==========================
+package "Service Layer" {
+    
+    package "Login Services" {
+        interface IRealizarLoginUseCase {
+            +execute(email: String, senha: String): Usuario
+        }
+        class RealizarLoginUseCase implements IRealizarLoginUseCase
+    }
+
+    package "Anuncio Services" {
+        interface ICriarAnuncioUseCase
+        class CriarAnuncioUseCase implements ICriarAnuncioUseCase
+
+        interface ICriarAnuncioPadraoUseCase
+        class CriarAnuncioPadraoUseCase implements ICriarAnuncioPadraoUseCase
+
+        interface IBuscarAnunciosUseCase
+        class BuscarAnunciosUseCase implements IBuscarAnunciosUseCase
+
+        interface IListarMeusAnunciosUseCase
+        class ListarMeusAnunciosUseCase implements IListarMeusAnunciosUseCase
+
+        interface ISubmeterAnuncioUseCase
+        class SubmeterAnuncioUseCase implements ISubmeterAnuncioUseCase
+
+        interface IRealizarVendaUseCase
+        class RealizarVendaUseCase implements IRealizarVendaUseCase
+        
+        class NotificacaoLogService {
+            +registrarEnvio(...)
+        }
+    }
+}
+
+' ==========================
+' CAMADA DE DOMÍNIO
+' ==========================
+package "Domain Layer" {
+    
+    package "Entities" {
+        abstract class Usuario {
+            -id: UUID
+            -nome: String
+            -email: String
+            -role: RoleUsuario
+            +{abstract} podeAnunciar(): boolean
+        }
+        class Corretor extends Usuario
+        class Proprietario extends Usuario
+        class Interessado extends Usuario
+        
+        class Anuncio {
+            -id: UUID
+            -valor: BigDecimal
+            -estadoAtual: EstadoAnuncio
+            +mudarEstadoAnuncio(novoEstado: EstadoAnuncio)
+            +submeterAModeracao()
+            +venderAnuncio()
+        }
+    }
+
+    package "Imovel Domain" {
+        abstract class Imovel implements domain.interfaces.patterns.prototype.Prototype {
+            -endereco: Endereco
+            -area: Double
+            +{abstract} clone(): Imovel
+        }
+        class Casa extends Imovel
+        class Apartamento extends Imovel
+        class Terreno extends Imovel
+        class Endereco
+    }
+    
+    package "Enums & Exceptions" {
+        enum RoleUsuario
+        enum TipoAnuncio
+        enum TipoImovel
+        enum StatusAnuncio
+        enum TipoNotificacao
+        class ModeracaoException
+    }
+}
+
+' ==========================
+' CAMADA DE PADRÕES (IMPLEMENTAÇÕES)
+' ==========================
+package "Patterns Layer" {
+    
+    ' --- CRIAÇÃO ---
+    package "Singleton" {
+        class Configuracao {
+            -instance: Configuracao
+            +getInstance(): Configuracao
+            +getPropriedade(chave: String): String
+        }
+    }
+
+    package "Factory Method" {
+        abstract class ImovelFactory {
+            +{abstract} criarImovel(dados: Map): Imovel
+        }
+        class CasaFactory extends ImovelFactory
+        class ApartamentoFactory extends ImovelFactory
+        class TerrenoFactory extends ImovelFactory
+    }
+
+    package "Prototype" {
+        interface Prototype<T> {
+            +clone(): T
+        }
+        class AnuncioPrototypeRegistry {
+            -prototipos: Map<String, Imovel>
+            +obterClone(chave: String): Imovel
+        }
+    }
+
+    ' --- ESTRUTURAL ---
+    package "Decorator" {
+        interface IBuscaAnuncio {
+            +executar(): List<Anuncio>
+        }
+        class BuscaTodosAnuncios implements IBuscaAnuncio
+        abstract class FiltroBaseDecorator implements IBuscaAnuncio
+        class FiltroCidade extends FiltroBaseDecorator
+        class FiltroPrecoMaximo extends FiltroBaseDecorator
+        class FiltroTipoImovel extends FiltroBaseDecorator
+        class FiltroFactory
+    }
+    
+    package "Chain of Responsibility" {
+        interface IModeracaoHandler {
+            +setNext(handler)
+            +handle(anuncio)
+        }
+        class BaseModeracaoHandler implements IModeracaoHandler
+        class ValidadorPreco extends BaseModeracaoHandler
+        class ValidadorTexto extends BaseModeracaoHandler
+        class ValidadorTamanho extends BaseModeracaoHandler
+    }
+
+    ' --- COMPORTAMENTAL ---
+    package "Observer" {
+        interface AnuncioObserver {
+            +onEstadoAlterado(...)
+        }
+        class NotificacaoAnuncioObserver implements AnuncioObserver
+    }
+
+    package "Strategy" {
+        abstract class NotificacaoStrategy {
+            +enviar(...)
+        }
+        class EmailNotificacaoStrategy extends NotificacaoStrategy
+    }
+    
+    package "State" {
+        abstract class EstadoAnuncio {
+            +enviarParaModeracao()
+            +aprovar()
+            +reprovar()
+            +vender()
+        }
+        class EstadoRascunho extends EstadoAnuncio
+        class EstadoModeracao extends EstadoAnuncio
+        class EstadoAtivo extends EstadoAnuncio
+        class EstadoVendido extends EstadoAnuncio
+        class EstadoSuspenso extends EstadoAnuncio
+    }
+
+    package "Template Method" {
+        abstract class ProcessoVenda {
+            +executarVenda(anuncio: Anuncio): String
+            #{abstract} calcularValorFinal(valor: BigDecimal): BigDecimal
+            #{abstract} processarPagamento(valor: BigDecimal): boolean
+        }
+        class VendaAvista extends ProcessoVenda
+        class VendaFinanciada extends ProcessoVenda
+    }
+}
+
+' ==========================
+' INFRAESTRUTURA
+' ==========================
+package "Infrastructure" {
+    class CargaDeDados
+    class BancoDeDados <<Singleton>> {
+        +getInstance(): BancoDeDados
+    }
+    class UsuarioRepository
+    class AnuncioRepository
+}
+
+
+' ==========================
+' RELACIONAMENTOS E LAYOUT
+' ==========================
+
+' --- Conexões Principais ---
+Main ..> CargaDeDados
+Main ..> MenuController
+MenuController o-- ConsoleUI
+MenuController o-- ICriarAnuncioUseCase
+MenuController o-- ICriarAnuncioPadraoUseCase
+MenuController o-- IBuscarAnunciosUseCase
+MenuController o-- ISubmeterAnuncioUseCase
+MenuController o-- IRealizarVendaUseCase
+MenuController o-- IListarMeusAnunciosUseCase
+
+' --- Services & Patterns ---
+CriarAnuncioUseCase ..> ImovelFactory
+CriarAnuncioPadraoUseCase ..> AnuncioPrototypeRegistry
+BuscarAnunciosUseCase ..> FiltroFactory
+BuscarAnunciosUseCase ..> IBuscaAnuncio
+SubmeterAnuncioUseCase ..> IModeracaoHandler
+RealizarVendaUseCase ..> ProcessoVenda
+
+' --- Domain Links ---
+Anuncio *-- Imovel
+Anuncio o-- Usuario
